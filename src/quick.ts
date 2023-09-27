@@ -1,9 +1,19 @@
+import { parseQuickNodes } from './quick-nodes.js';
+
 // Tag
 export function quick(strings: TemplateStringsArray, ...args: unknown[]): string {
-  let text = strings[0] ?? '';
+  let text = '';
 
-  for (let i = 0; i < args.length; ++i) {
-    text += args[i]! + strings[i + 1]!;
+  for (const node of parseQuickNodes(strings)) {
+    switch (node.type) {
+      case 'text':
+        text += node.text;
+        break;
+
+      case 'arg':
+        text += args[node.index]!;
+        break;
+    }
   }
 
   return text;
