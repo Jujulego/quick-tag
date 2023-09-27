@@ -12,7 +12,7 @@ export function parseQuickNodes(strings: TemplateStringsArray): QuickRootNode {
     // End of condition
     const endConditionIdx = text.indexOf('?#');
 
-    if (endConditionIdx !== -1) {
+    if (endConditionIdx !== -1 && stack.length > 1) {
       node.children.push({ type: 'text', text: text.slice(0, endConditionIdx) });
       text = text.slice(endConditionIdx + 2);
 
@@ -29,12 +29,14 @@ export function parseQuickNodes(strings: TemplateStringsArray): QuickRootNode {
         value: { type: 'arg', index: i },
         children: [],
       };
+
       node.children.push(condition);
       stack.push(condition);
 
       continue;
     }
 
+    // Only text
     node.children.push({ type: 'text', text });
 
     if (i < strings.length - 1) {
