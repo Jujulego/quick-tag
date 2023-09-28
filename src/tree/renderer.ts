@@ -1,7 +1,8 @@
 import { QuickParentNode } from './nodes.js';
+import { QuickConst } from '../types.js';
 
 // Renderer
-export function renderQuickNodes(node: QuickParentNode, args: unknown[]): string {
+export function renderQuickNodes(node: QuickParentNode, args: QuickConst[]): string {
   let text = '';
 
   for (const child of node.children) {

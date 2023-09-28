@@ -1,7 +1,7 @@
 import { parseQuickNodes, renderQuickNodes } from './tree/index.js';
+import { QuickConst } from './types.js';
 
 // Tag
-export function quickString(strings: TemplateStringsArray, ...args: unknown[]): string {
-  const root = parseQuickNodes(strings);
-  return renderQuickNodes(root, args);
+export function quickString(strings: TemplateStringsArray, ...args: QuickConst[]): string {
+  return renderQuickNodes(parseQuickNodes(strings), args);
 }
