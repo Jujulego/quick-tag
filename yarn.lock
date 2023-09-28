@@ -432,6 +432,9 @@ __metadata:
     vite: 4.4.9
     vite-tsconfig-paths: 4.2.1
     vitest: 0.34.5
+  dependenciesMeta:
+    vitest@0.34.5:
+      unplugged: true
   languageName: unknown
   linkType: soft
 
