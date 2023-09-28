@@ -5,3 +5,6 @@ import { QuickConst } from './types.js';
 export function quickString(strings: TemplateStringsArray, ...args: QuickConst[]): string {
   return renderQuickNodes(parseQuickNodes(strings), args);
 }
+
+// Alias
+export const qstr = quickString;

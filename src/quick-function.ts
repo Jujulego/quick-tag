@@ -14,3 +14,5 @@ export function quickFunction<T = void>(strings: TemplateStringsArray, ...fns: (
   };
 }
 
+// Alias
+export const qfun = quickFunction;
