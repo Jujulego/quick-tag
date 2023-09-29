@@ -14,5 +14,9 @@ describe('quickString', () => {
     it('should inject text between #? and ?# has given value is falsy', () => {
       expect(quickString`test #?:${false}is so cool that it ?#is successful`).toBe('test is successful');
     });
+
+    it('should inject reference to condition value', () => {
+      expect(quickString`test #?:${true}is #$ so it ?#is successful`).toBe('test is true so it is successful');
+    });
   });
 });

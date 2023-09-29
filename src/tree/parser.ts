@@ -8,16 +8,49 @@ export function parseQuickNodes(strings: TemplateStringsArray): QuickRootNode {
   for (let i = 0; i < strings.length; ++i) {
     let node = stack[stack.length - 1]!;
     let text = strings[i]!;
+    let startIdx = 0;
 
-    // End of condition
-    const endConditionIdx = text.indexOf('?#');
+    while (startIdx < text.length) {
+      const sheIdx = text.indexOf('#', startIdx);
 
-    if (endConditionIdx !== -1 && stack.length > 1) {
-      node.children.push({ type: 'text', text: text.slice(0, endConditionIdx) });
-      text = text.slice(endConditionIdx + 2);
+      // Nothing to parse
+      if (sheIdx === -1) {
+        break;
+      }
 
-      stack.pop();
-      node = stack[stack.length - 1]!;
+      // End of condition => ?#
+      if (sheIdx > 0 && text[sheIdx - 1] === '?') {
+        // Add final text
+        node.children.push({ type: 'text', text: text.slice(0, sheIdx - 1) });
+
+        // Update current node to parent
+        stack.pop();
+        node = stack[stack.length - 1]!;
+
+        // Reduce current text
+        text = text.slice(sheIdx + 1);
+        startIdx = 0;
+
+        continue;
+      }
+
+      // Condition value reference => #$
+      if (node.type === 'condition' && text[sheIdx + 1] === '$') {
+        // Add previous text
+        node.children.push({ type: 'text', text: text.slice(0, sheIdx) });
+
+        // Add referenced node
+        node.children.push(node.value);
+
+        // Reduce current text
+        text = text.slice(sheIdx + 2);
+        startIdx = 0;
+
+        continue;
+      }
+
+      // Ignore this # and search next one
+      startIdx = sheIdx + 1;
     }
 
     // Start of condition

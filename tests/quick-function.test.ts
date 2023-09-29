@@ -32,5 +32,11 @@ describe('quickFunction', () => {
 
       expect(formatter({ value: false })).toBe('test is successful');
     });
+
+    it('should inject reference to condition value', () => {
+      const formatter = quickFunction<TestArg>`test #?:${(arg) => arg.value}is #$ so it ?#is successful`;
+
+      expect(formatter({ value: true })).toBe('test is true so it is successful');
+    });
   });
 });
