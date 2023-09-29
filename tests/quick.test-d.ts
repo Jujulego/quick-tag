@@ -1,6 +1,6 @@
 import { expectTypeOf } from 'vitest';
 
-import { quickProperty } from '@/src/quick-property.js';
+import { Quick } from '@/src/quick.js';
 
 // Type
 export interface TestArg {
@@ -10,9 +10,12 @@ export interface TestArg {
   fun: () => string;
 }
 
+// Setup
+const quick = new Quick();
+
 // Tests
-describe('quickProperty', () => {
+describe('Quick.property', () => {
   it('should accept every key except "fun"', () => {
-    expectTypeOf(quickProperty<TestArg>).parameter(0).toEqualTypeOf<'int' | 'boo' | 'str'>();
+    expectTypeOf(quick.property<TestArg>).parameter(0).toEqualTypeOf<'int' | 'boo' | 'str'>();
   });
 });
