@@ -1,14 +1,38 @@
 import { QuickConditionNode, QuickParentNode, QuickRootNode } from './nodes.js';
 
 // Parser
-export function parseQuickNodes(strings: TemplateStringsArray): QuickRootNode {
-  const root: QuickRootNode = { type: 'root', children: [] };
-  const stack: QuickParentNode[] = [root];
+export class QuickParser {
+  // Attributes
+  readonly root: QuickRootNode = {
+    type: 'root',
+    children: []
+  };
 
-  for (let i = 0; i < strings.length; ++i) {
-    let node = stack[stack.length - 1]!;
-    let text = strings[i]!;
+  private readonly stack: QuickParentNode[] = [this.root];
+
+  // Methods
+  private _addArgNode(index: number) {
+    this.node.children.push({ type: 'arg', index });
+  }
+
+  private _addTextNode(text: string) {
+    this.node.children.push({ type: 'text', text });
+  }
+
+  private _addConditionNode(argIndex: number) {
+    const condition: QuickConditionNode = {
+      type: 'condition',
+      value: { type: 'arg', index: argIndex },
+      children: [],
+    };
+
+    this.node.children.push(condition);
+    this.stack.push(condition);
+  }
+
+  private _searchInsideMarks(text: string): string {
     let startIdx = 0;
+    let usedIdx = 0;
 
     while (startIdx < text.length) {
       const sheIdx = text.indexOf('#', startIdx);
@@ -18,64 +42,64 @@ export function parseQuickNodes(strings: TemplateStringsArray): QuickRootNode {
         break;
       }
 
-      // End of condition => ?#
-      if (sheIdx > 0 && text[sheIdx - 1] === '?') {
-        // Add final text
-        node.children.push({ type: 'text', text: text.slice(0, sheIdx - 1) });
+      if (this.node.type === 'condition') {
+        // End of condition => ?#
+        if (sheIdx > 0 && text[sheIdx - 1] === '?') {
+          // Add final text part
+          this._addTextNode(text.slice(usedIdx, sheIdx - 1));
+          usedIdx = startIdx = sheIdx + 1;
 
-        // Update current node to parent
-        stack.pop();
-        node = stack[stack.length - 1]!;
+          // Update current node to parent
+          this.stack.pop();
 
-        // Reduce current text
-        text = text.slice(sheIdx + 1);
-        startIdx = 0;
+          continue;
+        }
 
-        continue;
-      }
+        // Condition value reference => #$
+        if (text[sheIdx + 1] === '$') {
+          // Add previous text
+          this._addTextNode(text.slice(0, sheIdx));
+          usedIdx = startIdx = sheIdx + 2;
 
-      // Condition value reference => #$
-      if (node.type === 'condition' && text[sheIdx + 1] === '$') {
-        // Add previous text
-        node.children.push({ type: 'text', text: text.slice(0, sheIdx) });
+          // Add referenced node
+          this.node.children.push(this.node.value);
 
-        // Add referenced node
-        node.children.push(node.value);
-
-        // Reduce current text
-        text = text.slice(sheIdx + 2);
-        startIdx = 0;
-
-        continue;
+          continue;
+        }
       }
 
       // Ignore this # and search next one
       startIdx = sheIdx + 1;
     }
 
-    // Start of condition
-    if (text.endsWith('#?:')) {
-      node.children.push({ type: 'text', text: text.slice(0, -3) });
-
-      const condition: QuickConditionNode = {
-        type: 'condition',
-        value: { type: 'arg', index: i },
-        children: [],
-      };
-
-      node.children.push(condition);
-      stack.push(condition);
-
-      continue;
-    }
-
-    // Only text
-    node.children.push({ type: 'text', text });
-
-    if (i < strings.length - 1) {
-      node.children.push({ type: 'arg', index: i });
-    }
+    return text.slice(usedIdx);
   }
 
-  return root;
+  parse(strings: readonly string[]): QuickRootNode {
+    for (let i = 0; i < strings.length; ++i) {
+      const text = this._searchInsideMarks(strings[i]!);
+
+      // Start of condition
+      if (text.endsWith('#?:')) {
+        this._addTextNode(text.slice(0, -3));
+        this._addConditionNode(i);
+
+        continue;
+      }
+
+      // Only text
+      this._addTextNode(text);
+
+      if (i < strings.length - 1) {
+        this._addArgNode(i);
+      }
+    }
+
+    return this.root;
+  }
+
+  // Properties
+  private get node(): QuickParentNode {
+    return this.stack[this.stack.length - 1]!;
+  }
 }
