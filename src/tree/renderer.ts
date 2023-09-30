@@ -1,38 +1,113 @@
-import { QuickParentNode } from './nodes.js';
+import { QuickCommandNode, QuickParentNode } from './nodes.js';
 import { QuickCommand, QuickConst } from '../types.js';
 
+// Types
+export interface TemplateTagArgs {
+  strings: TemplateStringsArray;
+  args: QuickConst[];
+}
+
 // Renderer
-export function renderQuickNodes(node: QuickParentNode, args: QuickConst[], commands: Map<string, QuickCommand>): string {
-  let text = '';
+export class QuickRenderer {
+  // Constructor
+  constructor(
+    private readonly commands: Map<string, QuickCommand>
+  ) {}
 
-  for (const child of node.children) {
-    switch (child.type) {
-      case 'command': {
-        const cmd = commands.get(child.name);
+  // Methods
+  private _renderCommand(child: QuickCommandNode, args: QuickConst[]): string {
+    const cmd = this.commands.get(child.name);
 
-        if (cmd) {
-          text += cmd.format(args[child.arg.index]);
-        }
-
-        break;
-      }
-
-      case 'condition':
-        if (args[child.value.index]) {
-          text += renderQuickNodes(child, args, commands);
-        }
-
-        break;
-
-      case 'text':
-        text += child.text;
-        break;
-
-      case 'arg':
-        text += args[child.index];
-        break;
+    if (!cmd) {
+      return '';
     }
+
+    return cmd.format(args[child.arg.index]);
   }
 
-  return text;
+  renderToString(tree: QuickParentNode, args: QuickConst[]): string {
+    let result = '';
+
+    for (const child of tree.children) {
+      switch (child.type) {
+        case 'command':
+          result += this._renderCommand(child, args);
+          break;
+
+        case 'condition':
+          if (args[child.value.index]) {
+            result += this.renderToString(child, args);
+          }
+
+          break;
+
+        case 'text':
+          result += child.text;
+          break;
+
+        case 'arg':
+          result += args[child.index];
+          break;
+      }
+    }
+
+    return result;
+  }
+
+  renderToTemplateTag(tree: QuickParentNode, args: QuickConst[]): TemplateTagArgs {
+    const strings: string[] = [];
+    const tagArgs: QuickConst[] = [];
+
+    for (const child of tree.children) {
+      switch (child.type) {
+        case 'command': {
+          const arg = this._renderCommand(child, args);
+
+          if (arg) {
+            tagArgs.push(arg);
+          }
+
+          if (tagArgs.length > strings.length) {
+            strings.push('');
+          }
+
+          break;
+        }
+
+        case 'condition':
+          if (args[child.value.index]) {
+            const cond = this.renderToTemplateTag(child, args);
+
+            strings.push(...cond.strings);
+            tagArgs.push(...cond.args);
+          }
+
+          break;
+
+        case 'text':
+          strings.push(child.text);
+          break;
+
+        case 'arg':
+          tagArgs.push(args[child.index]);
+
+          if (tagArgs.length > strings.length) {
+            strings.push('');
+          }
+
+          break;
+      }
+    }
+
+    if (tagArgs.length === strings.length) {
+      strings.push('');
+    }
+
+    return {
+      strings: Object.assign(strings, {
+        raw: [...strings]
+      }),
+      args: tagArgs
+    };
+  }
 }

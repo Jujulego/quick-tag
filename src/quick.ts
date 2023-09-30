@@ -1,5 +1,6 @@
-import { QuickParser, renderQuickNodes } from './tree/index.js';
+import { QuickParser, QuickRenderer } from './tree/index.js';
 import { QuickArg, QuickCommand, QuickConst, QuickFun, QuickKey } from './types.js';
+import { QuickWrapper } from './quick-wrapper.js';
 
 // Class
 export class Quick {
@@ -16,15 +17,24 @@ export class Quick {
     return new QuickParser(this._commands);
   }
 
+  renderer(): QuickRenderer {
+    return new QuickRenderer(this._commands);
+  }
+
+  wrap<R>(tag: (strings: TemplateStringsArray, ...args: QuickConst[]) => R): QuickWrapper<R> {
+    return new QuickWrapper<R>(tag, this._commands);
+  }
+
   /**
    * Parses quick marks and builds a formatter function
    */
   function<T = void>(strings: TemplateStringsArray, ...fns: (QuickArg<T> | QuickConst)[]): QuickFun<T> {
     const tree = this.parser().parse(strings);
+    const renderer = this.renderer();
 
     return (arg: T) => {
       const args = fns.map((fn) => typeof fn === 'function' ? fn(arg) : fn);
-      return renderQuickNodes(tree, args, this._commands);
+      return renderer.renderToString(tree, args);
     };
   }
 
@@ -39,6 +49,6 @@ export class Quick {
    * Parses quick marks and renders template into a string
    */
   string(strings: TemplateStringsArray, ...args: QuickConst[]): string {
-    return renderQuickNodes(this.parser().parse(strings), args, this._commands);
+    return this.renderer().renderToString(this.parser().parse(strings), args);
   }
 }
