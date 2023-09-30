@@ -61,6 +61,12 @@ describe('Quick.string', () => {
     expect(quick.string`life=${42}`).toBe('life=42');
   });
 
+  describe('quick commands', () => {
+    it('should format object with JSON.stringify', () => {
+      expect(quick.string`#!json:${{ life: 42 }}`).toBe(JSON.stringify({ life: 42 }));
+    });
+  });
+
   describe('quick conditions', () => {
     it('should inject text between #? and ?# has given value is truthy', () => {
       expect(quick.string`test #?:${true}is so cool that it ?#is successful`).toBe('test is so cool that it is successful');

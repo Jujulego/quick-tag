@@ -1,4 +1,4 @@
-import { QuickConditionNode, QuickParentNode, QuickRootNode } from './nodes.js';
+import { QuickCommandNode, QuickConditionNode, QuickParentNode, QuickRootNode } from './nodes.js';
 
 // Parser
 export class QuickParser {
@@ -28,6 +28,16 @@ export class QuickParser {
 
     this.node.children.push(condition);
     this.stack.push(condition);
+  }
+
+  private _addCommandNode(name: string, argIndex: number) {
+    const condition: QuickCommandNode = {
+      type: 'command',
+      name,
+      arg: { type: 'arg', index: argIndex },
+    };
+
+    this.node.children.push(condition);
   }
 
   private _searchInsideMarks(text: string): string {
@@ -79,10 +89,21 @@ export class QuickParser {
     for (let i = 0; i < strings.length; ++i) {
       const text = this._searchInsideMarks(strings[i]!);
 
-      // Start of condition
+      // Start of condition => #?:
       if (text.endsWith('#?:')) {
         this._addTextNode(text.slice(0, -3));
         this._addConditionNode(i);
+
+        continue;
+      }
+
+      // Command call => #!{name}:
+      const commandMatch = text.match(/#!([a-z]+):$/);
+
+      if (commandMatch) {
+        const name = commandMatch[1]!;
+        this._addTextNode(text.slice(0, -3 - name.length));
+        this._addCommandNode(name, i);
 
         continue;
       }

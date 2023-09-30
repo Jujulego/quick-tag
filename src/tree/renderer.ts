@@ -7,6 +7,13 @@ export function renderQuickNodes(node: QuickParentNode, args: QuickConst[]): str
 
   for (const child of node.children) {
     switch (child.type) {
+      case 'command':
+        if (child.name === 'json') {
+          text += JSON.stringify(args[child.arg.index]);
+        }
+
+        break;
+
       case 'condition':
         if (args[child.value.index]) {
           text += renderQuickNodes(child, args);
