@@ -22,6 +22,7 @@ export class QuickParser {
   }
 
   private _addTextNode(text: string) {
+    if (text === '') return;
     this.node.children.push({ type: 'text', text });
   }
 
