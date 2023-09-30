@@ -1,4 +1,5 @@
-import { QuickConditionNode, QuickParentNode, QuickRootNode } from './nodes.js';
+import { QuickCommandNode, QuickConditionNode, QuickParentNode, QuickRootNode } from './nodes.js';
+import { QuickCommand } from '../types.js';
 
 // Parser
 export class QuickParser {
@@ -9,6 +10,11 @@ export class QuickParser {
   };
 
   private readonly stack: QuickParentNode[] = [this.root];
+
+  // Constructor
+  constructor(
+    private readonly commands: Map<string, QuickCommand>
+  ) {}
 
   // Methods
   private _addArgNode(index: number) {
@@ -30,7 +36,22 @@ export class QuickParser {
     this.stack.push(condition);
   }
 
+  private _addCommandNode(name: string, argIndex: number) {
+    const command: QuickCommandNode = {
+      type: 'command',
+      name,
+      arg: { type: 'arg', index: argIndex },
+    };
+
+    this.node.children.push(command);
+  }
+
   private _searchInsideMarks(text: string): string {
+    if (this.node.type !== 'condition') {
+      return text;
+    }
+
+    // Search for marks
     let startIdx = 0;
     let usedIdx = 0;
 
@@ -42,30 +63,42 @@ export class QuickParser {
         break;
       }
 
-      if (this.node.type === 'condition') {
-        // End of condition => ?#
-        if (sheIdx > 0 && text[sheIdx - 1] === '?') {
-          // Add final text part
-          this._addTextNode(text.slice(usedIdx, sheIdx - 1));
-          usedIdx = startIdx = sheIdx + 1;
+      // End of condition => ?#
+      if (sheIdx > 0 && text[sheIdx - 1] === '?') {
+        // Add final text part
+        this._addTextNode(text.slice(usedIdx, sheIdx - 1));
+        usedIdx = startIdx = sheIdx + 1;
 
-          // Update current node to parent
-          this.stack.pop();
+        // Update current node to parent
+        this.stack.pop();
 
-          continue;
-        }
+        continue;
+      }
 
-        // Condition value reference => #$
-        if (text[sheIdx + 1] === '$') {
-          // Add previous text
-          this._addTextNode(text.slice(0, sheIdx));
-          usedIdx = startIdx = sheIdx + 2;
+      // Condition value reference => #$
+      if (text[sheIdx + 1] === '$') {
+        // Add previous text
+        this._addTextNode(text.slice(0, sheIdx));
+        usedIdx = startIdx = sheIdx + 2;
 
-          // Add referenced node
-          this.node.children.push(this.node.value);
+        // Add referenced node
+        this.node.children.push(this.node.value);
 
-          continue;
-        }
+        continue;
+      }
+
+      // Command call on ref => #!{name}$
+      const commandMatch = /^#!([a-z]+)\$/.exec(text.slice(sheIdx));
+
+      if (commandMatch && this.commands.has(commandMatch[1]!)) {
+        // Add previous text
+        this._addTextNode(text.slice(0, sheIdx));
+        usedIdx = startIdx = sheIdx + commandMatch[0]!.length;
+
+        // Add command node
+        this._addCommandNode(commandMatch[1]!, this.node.value.index);
+
+        continue;
       }
 
       // Ignore this # and search next one
@@ -79,10 +112,20 @@ export class QuickParser {
     for (let i = 0; i < strings.length; ++i) {
       const text = this._searchInsideMarks(strings[i]!);
 
-      // Start of condition
+      // Start of condition => #?:
       if (text.endsWith('#?:')) {
         this._addTextNode(text.slice(0, -3));
         this._addConditionNode(i);
+
+        continue;
+      }
+
+      // Command call => #!{name}:
+      const commandMatch = /#!([a-z]+):$/.exec(text);
+
+      if (commandMatch && this.commands.has(commandMatch[1]!)) {
+        this._addTextNode(text.slice(0, -commandMatch[0]!.length));
+        this._addCommandNode(commandMatch[1]!, i);
 
         continue;
       }

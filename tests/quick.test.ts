@@ -1,4 +1,7 @@
+import { beforeEach } from 'vitest';
+
 import { Quick } from '@/src/quick.js';
+import { QuickCommand } from '@/src/types.js';
 
 // Type
 export interface TestArg {
@@ -61,6 +64,24 @@ describe('Quick.string', () => {
     expect(quick.string`life=${42}`).toBe('life=42');
   });
 
+  describe('quick commands', () => {
+    it('should format object with JSON.stringify', () => {
+      const command: QuickCommand = {
+        name: 'test',
+        format: vi.fn(() => 'life')
+      };
+
+      quick.register(command);
+
+      expect(quick.string`#!test:${42}`).toBe('life');
+      expect(command.format).toHaveBeenCalledWith(42);
+    });
+
+    it('should leave mark if command is unknown', () => {
+      expect(quick.string`#!test:${42}`).toBe('#!test:42');
+    });
+  });
+
   describe('quick conditions', () => {
     it('should inject text between #? and ?# has given value is truthy', () => {
       expect(quick.string`test #?:${true}is so cool that it ?#is successful`).toBe('test is so cool that it is successful');
@@ -72,6 +93,20 @@ describe('Quick.string', () => {
 
     it('should inject reference to condition value', () => {
       expect(quick.string`test #?:${true}is #$ so it ?#is successful`).toBe('test is true so it is successful');
+    });
+
+    it('should format reference with JSON.stringify', () => {
+      const command: QuickCommand = {
+        name: 'test',
+        format: vi.fn(() => 'life')
+      };
+
+      quick.register(command);
+
+      expect(quick.string`test #?:${42}with some #!test$ ?#is successful`)
+        .toBe('test with some life is successful');
+
+      expect(command.format).toHaveBeenCalledWith(42);
     });
   });
 });
