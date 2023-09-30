@@ -47,6 +47,11 @@ export class QuickParser {
   }
 
   private _searchInsideMarks(text: string): string {
+    if (this.node.type !== 'condition') {
+      return text;
+    }
+
+    // Search for marks
     let startIdx = 0;
     let usedIdx = 0;
 
@@ -58,44 +63,42 @@ export class QuickParser {
         break;
       }
 
-      if (this.node.type === 'condition') {
-        // End of condition => ?#
-        if (sheIdx > 0 && text[sheIdx - 1] === '?') {
-          // Add final text part
-          this._addTextNode(text.slice(usedIdx, sheIdx - 1));
-          usedIdx = startIdx = sheIdx + 1;
+      // End of condition => ?#
+      if (sheIdx > 0 && text[sheIdx - 1] === '?') {
+        // Add final text part
+        this._addTextNode(text.slice(usedIdx, sheIdx - 1));
+        usedIdx = startIdx = sheIdx + 1;
 
-          // Update current node to parent
-          this.stack.pop();
+        // Update current node to parent
+        this.stack.pop();
 
-          continue;
-        }
+        continue;
+      }
 
-        // Condition value reference => #$
-        if (text[sheIdx + 1] === '$') {
-          // Add previous text
-          this._addTextNode(text.slice(0, sheIdx));
-          usedIdx = startIdx = sheIdx + 2;
+      // Condition value reference => #$
+      if (text[sheIdx + 1] === '$') {
+        // Add previous text
+        this._addTextNode(text.slice(0, sheIdx));
+        usedIdx = startIdx = sheIdx + 2;
 
-          // Add referenced node
-          this.node.children.push(this.node.value);
+        // Add referenced node
+        this.node.children.push(this.node.value);
 
-          continue;
-        }
+        continue;
+      }
 
-        // Command call on ref => #!{name}$
-        const commandMatch = text.slice(sheIdx).match(/^#!([a-z]+)\$/);
+      // Command call on ref => #!{name}$
+      const commandMatch = /^#!([a-z]+)\$/.exec(text.slice(sheIdx));
 
-        if (commandMatch && this.commands.has(commandMatch[1]!)) {
-          // Add previous text
-          this._addTextNode(text.slice(0, sheIdx));
-          usedIdx = startIdx = sheIdx + commandMatch[0]!.length;
+      if (commandMatch && this.commands.has(commandMatch[1]!)) {
+        // Add previous text
+        this._addTextNode(text.slice(0, sheIdx));
+        usedIdx = startIdx = sheIdx + commandMatch[0]!.length;
 
-          // Add command node
-          this._addCommandNode(commandMatch[1]!, this.node.value.index);
+        // Add command node
+        this._addCommandNode(commandMatch[1]!, this.node.value.index);
 
-          continue;
-        }
+        continue;
       }
 
       // Ignore this # and search next one
@@ -118,7 +121,7 @@ export class QuickParser {
       }
 
       // Command call => #!{name}:
-      const commandMatch = text.match(/#!([a-z]+):$/);
+      const commandMatch = /#!([a-z]+):$/.exec(text);
 
       if (commandMatch && this.commands.has(commandMatch[1]!)) {
         this._addTextNode(text.slice(0, -commandMatch[0]!.length));

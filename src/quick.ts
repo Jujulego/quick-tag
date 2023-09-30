@@ -7,7 +7,7 @@ export class Quick {
   private readonly _commands = new Map<string, QuickCommand>();
 
   // Methods
-  register(command: QuickCommand): Quick {
+  register(command: QuickCommand): this {
     this._commands.set(command.name, command);
     return this;
   }
