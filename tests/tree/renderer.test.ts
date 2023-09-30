@@ -1,16 +1,18 @@
-import { renderQuickNodes } from '@/src/tree/renderer.js';
+import { QuickRenderer } from '@/src/tree/renderer.js';
 import { QuickCommand } from '@/src/types.js';
 import { QuickRootNode } from '@/src/tree/index.js';
 
 // Setup
 let commands: Map<string, QuickCommand>;
+let renderer: QuickRenderer;
 
 beforeEach(() => {
   commands = new Map();
+  renderer = new QuickRenderer(commands);
 });
 
 // Tests
-describe('renderQuickNodes', () => {
+describe('QuickRenderer.renderToString', () => {
   it('should concatenates text nodes with arg nodes into a string', () => {
     const root: QuickRootNode = { // qstr`a${1}b${2}c`
       type: 'root',
@@ -23,7 +25,7 @@ describe('renderQuickNodes', () => {
       ]
     };
 
-    expect(renderQuickNodes(root, [1, 2], commands))
+    expect(renderer.renderToString(root, [1, 2]))
       .toBe('a1b2c');
   });
 
@@ -50,7 +52,7 @@ describe('renderQuickNodes', () => {
 
       commands.set('life', command);
 
-      expect(renderQuickNodes(root, [1, 42], commands))
+      expect(renderer.renderToString(root, [1, 42]))
         .toBe('a1lifec');
 
       expect(command.format).toHaveBeenCalledWith(42);
@@ -71,7 +73,7 @@ describe('renderQuickNodes', () => {
         ]
       };
 
-      expect(renderQuickNodes(root, [1, 42], commands))
+      expect(renderer.renderToString(root, [1, 42]))
         .toBe('a1c');
     });
   });
@@ -95,7 +97,7 @@ describe('renderQuickNodes', () => {
         ]
       };
 
-      expect(renderQuickNodes(root, [1, true, 2], commands))
+      expect(renderer.renderToString(root, [1, true, 2]))
         .toBe('a1b2c');
     });
 
@@ -117,7 +119,7 @@ describe('renderQuickNodes', () => {
         ]
       };
 
-      expect(renderQuickNodes(root, [1, false, 2], commands))
+      expect(renderer.renderToString(root, [1, false, 2]))
         .toBe('a12c');
     });
   });
