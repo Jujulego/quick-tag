@@ -1,11 +1,19 @@
 import { QuickParser, renderQuickNodes } from './tree/index.js';
-import { QuickArg, QuickConst, QuickFun, QuickKey } from './types.js';
+import { QuickArg, QuickCommand, QuickConst, QuickFun, QuickKey } from './types.js';
 
 // Class
 export class Quick {
+  // Attributes
+  private readonly _commands = new Map<string, QuickCommand>();
+
   // Methods
+  register(command: QuickCommand): Quick {
+    this._commands.set(command.name, command);
+    return this;
+  }
+
   parser(): QuickParser {
-    return new QuickParser();
+    return new QuickParser(this._commands);
   }
 
   /**
@@ -16,7 +24,7 @@ export class Quick {
 
     return (arg: T) => {
       const args = fns.map((fn) => typeof fn === 'function' ? fn(arg) : fn);
-      return renderQuickNodes(tree, args);
+      return renderQuickNodes(tree, args, this._commands);
     };
   }
 
@@ -31,6 +39,6 @@ export class Quick {
    * Parses quick marks and renders template into a string
    */
   string(strings: TemplateStringsArray, ...args: QuickConst[]): string {
-    return renderQuickNodes(this.parser().parse(strings), args);
+    return renderQuickNodes(this.parser().parse(strings), args, this._commands);
   }
 }

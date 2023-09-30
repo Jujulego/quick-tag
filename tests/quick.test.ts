@@ -1,4 +1,7 @@
+import { beforeEach } from 'vitest';
+
 import { Quick } from '@/src/quick.js';
+import { QuickCommand } from '@/src/types.js';
 
 // Type
 export interface TestArg {
@@ -63,7 +66,19 @@ describe('Quick.string', () => {
 
   describe('quick commands', () => {
     it('should format object with JSON.stringify', () => {
-      expect(quick.string`#!json:${{ life: 42 }}`).toBe(JSON.stringify({ life: 42 }));
+      const command: QuickCommand = {
+        name: 'test',
+        format: vi.fn(() => 'life')
+      };
+
+      quick.register(command);
+
+      expect(quick.string`#!test:${42}`).toBe('life');
+      expect(command.format).toHaveBeenCalledWith(42);
+    });
+
+    it('should leave mark if command is unknown', () => {
+      expect(quick.string`#!test:${42}`).toBe('#!test:42');
     });
   });
 
@@ -81,8 +96,17 @@ describe('Quick.string', () => {
     });
 
     it('should format reference with JSON.stringify', () => {
-      expect(quick.string`test #?:${{ life: 42 }}with some json #!json$ ?#is successful`)
-        .toBe(`test with some json ${JSON.stringify({ life: 42 })} is successful`);
+      const command: QuickCommand = {
+        name: 'test',
+        format: vi.fn(() => 'life')
+      };
+
+      quick.register(command);
+
+      expect(quick.string`test #?:${42}with some #!test$ ?#is successful`)
+        .toBe('test with some life is successful');
+
+      expect(command.format).toHaveBeenCalledWith(42);
     });
   });
 });

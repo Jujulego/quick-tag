@@ -1,4 +1,5 @@
 import { QuickCommandNode, QuickConditionNode, QuickParentNode, QuickRootNode } from './nodes.js';
+import { QuickCommand } from '../types.js';
 
 // Parser
 export class QuickParser {
@@ -9,6 +10,11 @@ export class QuickParser {
   };
 
   private readonly stack: QuickParentNode[] = [this.root];
+
+  // Constructor
+  constructor(
+    private readonly commands: Map<string, QuickCommand>
+  ) {}
 
   // Methods
   private _addArgNode(index: number) {
@@ -80,7 +86,7 @@ export class QuickParser {
         // Command call on ref => #!{name}$
         const commandMatch = text.slice(sheIdx).match(/^#!([a-z]+)\$/);
 
-        if (commandMatch) {
+        if (commandMatch && this.commands.has(commandMatch[1]!)) {
           // Add previous text
           this._addTextNode(text.slice(0, sheIdx));
           usedIdx = startIdx = sheIdx + commandMatch[0]!.length;
@@ -114,7 +120,7 @@ export class QuickParser {
       // Command call => #!{name}:
       const commandMatch = text.match(/#!([a-z]+):$/);
 
-      if (commandMatch) {
+      if (commandMatch && this.commands.has(commandMatch[1]!)) {
         this._addTextNode(text.slice(0, -commandMatch[0]!.length));
         this._addCommandNode(commandMatch[1]!, i);
 
