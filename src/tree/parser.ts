@@ -76,6 +76,20 @@ export class QuickParser {
 
           continue;
         }
+
+        // Command call on ref => #!{name}$
+        const commandMatch = text.slice(sheIdx).match(/^#!([a-z]+)\$/);
+
+        if (commandMatch) {
+          // Add previous text
+          this._addTextNode(text.slice(0, sheIdx));
+          usedIdx = startIdx = sheIdx + commandMatch[0]!.length;
+
+          // Add command node
+          this._addCommandNode(commandMatch[1]!, this.node.value.index);
+
+          continue;
+        }
       }
 
       // Ignore this # and search next one
@@ -101,9 +115,8 @@ export class QuickParser {
       const commandMatch = text.match(/#!([a-z]+):$/);
 
       if (commandMatch) {
-        const name = commandMatch[1]!;
-        this._addTextNode(text.slice(0, -3 - name.length));
-        this._addCommandNode(name, i);
+        this._addTextNode(text.slice(0, -commandMatch[0]!.length));
+        this._addCommandNode(commandMatch[1]!, i);
 
         continue;
       }

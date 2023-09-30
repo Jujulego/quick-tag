@@ -79,5 +79,10 @@ describe('Quick.string', () => {
     it('should inject reference to condition value', () => {
       expect(quick.string`test #?:${true}is #$ so it ?#is successful`).toBe('test is true so it is successful');
     });
+
+    it('should format reference with JSON.stringify', () => {
+      expect(quick.string`test #?:${{ life: 42 }}with some json #!json$ ?#is successful`)
+        .toBe(`test with some json ${JSON.stringify({ life: 42 })} is successful`);
+    });
   });
 });
