@@ -141,7 +141,9 @@ describe('QuickRenderer.renderToTemplateTag', () => {
 
     expect(renderer.renderToTemplateTag(root, [1, 2, 3]))
       .toEqual({
-        strings: ['a', 'b', 'c', ''],
+        strings: Object.assign(['a', 'b', 'c', ''], {
+          raw: ['a', 'b', 'c', '']
+        }),
         args: [1, 2, 3]
       });
   });
@@ -170,9 +172,11 @@ describe('QuickRenderer.renderToTemplateTag', () => {
       commands.set('life', command);
 
       expect(renderer.renderToTemplateTag(root, [1, 42]))
-        .toStrictEqual({
-          strings: ['a', '', 'c'],
-          args: [1, 'life']
+        .toEqual({
+          strings: Object.assign(['a', '', 'c'], {
+            raw: ['a', '', 'c'],
+          }),
+          args: [1, 'life'],
         });
 
       expect(command.format).toHaveBeenCalledWith(42);
@@ -194,8 +198,10 @@ describe('QuickRenderer.renderToTemplateTag', () => {
       };
 
       expect(renderer.renderToTemplateTag(root, [1, 42]))
-        .toStrictEqual({
-          strings: ['a', 'c'],
+        .toEqual({
+          strings: Object.assign(['a', 'c'], {
+            raw: ['a', 'c'],
+          }),
           args: [1]
         });
     });
@@ -221,8 +227,10 @@ describe('QuickRenderer.renderToTemplateTag', () => {
       };
 
       expect(renderer.renderToTemplateTag(root, [1, true, 2]))
-        .toStrictEqual({
-          strings: ['a', 'b', 'c'],
+        .toEqual({
+          strings: Object.assign(['a', 'b', 'c'], {
+            raw: ['a', 'b', 'c']
+          }),
           args: [1, 2]
         });
     });
@@ -246,8 +254,10 @@ describe('QuickRenderer.renderToTemplateTag', () => {
       };
 
       expect(renderer.renderToTemplateTag(root, [1, false, 2]))
-        .toStrictEqual({
-          strings: ['a', '', 'c'],
+        .toEqual({
+          strings: Object.assign(['a', '', 'c'], {
+            raw: ['a', '', 'c']
+          }),
           args: [1, 2]
         });
     });

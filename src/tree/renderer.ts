@@ -3,7 +3,7 @@ import { QuickCommand, QuickConst } from '../types.js';
 
 // Types
 export interface TemplateTagArgs {
-  strings: string[];
+  strings: TemplateStringsArray;
   args: QuickConst[];
 }
 
@@ -55,10 +55,8 @@ export class QuickRenderer {
   }
 
   renderToTemplateTag(tree: QuickParentNode, args: QuickConst[]): TemplateTagArgs {
-    const result: TemplateTagArgs = {
-      strings: [],
-      args: [],
-    };
+    const strings: string[] = [];
+    const tagArgs: QuickConst[] = [];
 
     for (const child of tree.children) {
       switch (child.type) {
@@ -66,11 +64,11 @@ export class QuickRenderer {
           const arg = this._renderCommand(child, args);
 
           if (arg) {
-            result.args.push(arg);
+            tagArgs.push(arg);
           }
 
-          if (result.args.length > result.strings.length) {
-            result.strings.push('');
+          if (tagArgs.length > strings.length) {
+            strings.push('');
           }
 
           break;
@@ -80,31 +78,36 @@ export class QuickRenderer {
           if (args[child.value.index]) {
             const cond = this.renderToTemplateTag(child, args);
 
-            result.strings.push(...cond.strings);
-            result.args.push(...cond.args);
+            strings.push(...cond.strings);
+            tagArgs.push(...cond.args);
           }
 
           break;
 
         case 'text':
-          result.strings.push(child.text);
+          strings.push(child.text);
           break;
 
         case 'arg':
-          result.args.push(args[child.index]);
+          tagArgs.push(args[child.index]);
 
-          if (result.args.length > result.strings.length) {
-            result.strings.push('');
+          if (tagArgs.length > strings.length) {
+            strings.push('');
           }
 
           break;
       }
     }
 
-    if (result.args.length === result.strings.length) {
-      result.strings.push('');
+    if (tagArgs.length === strings.length) {
+      strings.push('');
     }
 
-    return result;
+    return {
+      strings: Object.assign(strings, {
+        raw: [...strings]
+      }),
+      args: tagArgs
+    };
   }
 }

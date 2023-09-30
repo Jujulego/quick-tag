@@ -1,5 +1,6 @@
 import { QuickParser, QuickRenderer } from './tree/index.js';
 import { QuickArg, QuickCommand, QuickConst, QuickFun, QuickKey } from './types.js';
+import { QuickWrapper } from './quick-wrapper.js';
 
 // Class
 export class Quick {
@@ -18,6 +19,10 @@ export class Quick {
 
   renderer(): QuickRenderer {
     return new QuickRenderer(this._commands);
+  }
+
+  wrap<R>(tag: (strings: TemplateStringsArray, ...args: QuickConst[]) => R): QuickWrapper<R> {
+    return new QuickWrapper<R>(tag, this._commands);
   }
 
   /**
