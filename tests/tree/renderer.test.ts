@@ -261,5 +261,30 @@ describe('QuickRenderer.renderToTemplateTag', () => {
           args: [1, 2]
         });
     });
+
+    it('should join text from outside condition', () => {
+      const root: QuickRootNode = { // qstr`a#?${true}b?#c`
+        type: 'root',
+        children: [
+          { type: 'text', text: 'a' },
+          {
+            type: 'condition',
+            value: { type: 'arg', index: 0 },
+            children: [
+              { type: 'text', text: 'b' },
+            ]
+          },
+          { type: 'text', text: 'c' },
+        ]
+      };
+
+      expect(renderer.renderToTemplateTag(root, [true]))
+        .toEqual({
+          strings: Object.assign(['abc'], {
+            raw: ['abc']
+          }),
+          args: []
+        });
+    });
   });
 });
