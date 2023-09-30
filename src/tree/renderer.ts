@@ -78,14 +78,25 @@ export class QuickRenderer {
           if (args[child.value.index]) {
             const cond = this.renderToTemplateTag(child, args);
 
-            strings.push(...cond.strings);
+            if (strings.length > tagArgs.length) {
+              strings[strings.length - 1] += cond.strings[0];
+              strings.push(...cond.strings.slice(1));
+            } else {
+              strings.push(...cond.strings);
+            }
+
             tagArgs.push(...cond.args);
           }
 
           break;
 
         case 'text':
-          strings.push(child.text);
+          if (strings.length > tagArgs.length) {
+            strings[strings.length - 1] += child.text;
+          } else {
+            strings.push(child.text);
+          }
+
           break;
 
         case 'arg':
