@@ -31,13 +31,13 @@ export class QuickParser {
   }
 
   private _addCommandNode(name: string, argIndex: number) {
-    const condition: QuickCommandNode = {
+    const command: QuickCommandNode = {
       type: 'command',
       name,
       arg: { type: 'arg', index: argIndex },
     };
 
-    this.node.children.push(condition);
+    this.node.children.push(command);
   }
 
   private _searchInsideMarks(text: string): string {
