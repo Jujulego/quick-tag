@@ -1,6 +1,12 @@
 import { QuickCommandNode, QuickParentNode } from './nodes.js';
 import { QuickCommand, QuickConst } from '../types.js';
 
+// Types
+export interface TemplateTagArgs {
+  strings: string[];
+  args: QuickConst[];
+}
+
 // Renderer
 export class QuickRenderer {
   // Constructor
@@ -20,31 +26,85 @@ export class QuickRenderer {
   }
 
   renderToString(tree: QuickParentNode, args: QuickConst[]): string {
-    let text = '';
+    let result = '';
 
     for (const child of tree.children) {
       switch (child.type) {
         case 'command':
-          text += this._renderCommand(child, args);
+          result += this._renderCommand(child, args);
           break;
 
         case 'condition':
           if (args[child.value.index]) {
-            text += this.renderToString(child, args);
+            result += this.renderToString(child, args);
           }
 
           break;
 
         case 'text':
-          text += child.text;
+          result += child.text;
           break;
 
         case 'arg':
-          text += args[child.index];
+          result += args[child.index];
           break;
       }
     }
 
-    return text;
+    return result;
+  }
+
+  renderToTemplateTag(tree: QuickParentNode, args: QuickConst[]): TemplateTagArgs {
+    const result: TemplateTagArgs = {
+      strings: [],
+      args: [],
+    };
+
+    for (const child of tree.children) {
+      switch (child.type) {
+        case 'command': {
+          const arg = this._renderCommand(child, args);
+
+          if (arg) {
+            result.args.push(arg);
+          }
+
+          if (result.args.length > result.strings.length) {
+            result.strings.push('');
+          }
+
+          break;
+        }
+
+        case 'condition':
+          if (args[child.value.index]) {
+            const cond = this.renderToTemplateTag(child, args);
+
+            result.strings.push(...cond.strings);
+            result.args.push(...cond.args);
+          }
+
+          break;
+
+        case 'text':
+          result.strings.push(child.text);
+          break;
+
+        case 'arg':
+          result.args.push(args[child.index]);
+
+          if (result.args.length > result.strings.length) {
+            result.strings.push('');
+          }
+
+          break;
+      }
+    }
+
+    if (result.args.length === result.strings.length) {
+      result.strings.push('');
+    }
+
+    return result;
   }
 }

@@ -124,3 +124,132 @@ describe('QuickRenderer.renderToString', () => {
     });
   });
 });
+
+describe('QuickRenderer.renderToTemplateTag', () => {
+  it('should prepare arguments for another template tag', () => {
+    const root: QuickRootNode = { // qstr`a${1}b${2}c${3}`
+      type: 'root',
+      children: [
+        { type: 'text', text: 'a' },
+        { type: 'arg', index: 0 },
+        { type: 'text', text: 'b' },
+        { type: 'arg', index: 1 },
+        { type: 'text', text: 'c' },
+        { type: 'arg', index: 2 },
+      ]
+    };
+
+    expect(renderer.renderToTemplateTag(root, [1, 2, 3]))
+      .toEqual({
+        strings: ['a', 'b', 'c', ''],
+        args: [1, 2, 3]
+      });
+  });
+
+  describe('with a command', () => {
+    it('should call command format on argument and inject result in final string', () => {
+      const root: QuickRootNode = { // qstr`a${1}#!life:${2}c`
+        type: 'root',
+        children: [
+          { type: 'text', text: 'a' },
+          { type: 'arg', index: 0 },
+          {
+            type: 'command',
+            name: 'life',
+            arg: { type: 'arg', index: 1 },
+          },
+          { type: 'text', text: 'c' },
+        ]
+      };
+
+      const command: QuickCommand = {
+        name: 'life',
+        format: vi.fn(() => 'life'),
+      };
+
+      commands.set('life', command);
+
+      expect(renderer.renderToTemplateTag(root, [1, 42]))
+        .toStrictEqual({
+          strings: ['a', '', 'c'],
+          args: [1, 'life']
+        });
+
+      expect(command.format).toHaveBeenCalledWith(42);
+    });
+
+    it('should ignore unknown command', () => {
+      const root: QuickRootNode = { // qstr`a${1}#!life:${2}c`
+        type: 'root',
+        children: [
+          { type: 'text', text: 'a' },
+          { type: 'arg', index: 0 },
+          {
+            type: 'command',
+            name: 'life',
+            arg: { type: 'arg', index: 1 },
+          },
+          { type: 'text', text: 'c' },
+        ]
+      };
+
+      expect(renderer.renderToTemplateTag(root, [1, 42]))
+        .toStrictEqual({
+          strings: ['a', 'c'],
+          args: [1]
+        });
+    });
+  });
+
+  describe('with a condition', () => {
+    it('should render inside of the condition as its value is true', () => {
+      const root: QuickRootNode = { // qstr`a${1}#?:${true}b?#${2}c`
+        type: 'root',
+        children: [
+          { type: 'text', text: 'a' },
+          { type: 'arg', index: 0 },
+          {
+            type: 'condition',
+            value: { type: 'arg', index: 1 },
+            children: [
+              { type: 'text', text: 'b' },
+            ]
+          },
+          { type: 'arg', index: 2 },
+          { type: 'text', text: 'c' },
+        ]
+      };
+
+      expect(renderer.renderToTemplateTag(root, [1, true, 2]))
+        .toStrictEqual({
+          strings: ['a', 'b', 'c'],
+          args: [1, 2]
+        });
+    });
+
+    it('should not render inside of the condition as its value is false', () => {
+      const root: QuickRootNode = { // qstr`a${1}#?:${false}b?#${2}c`
+        type: 'root',
+        children: [
+          { type: 'text', text: 'a' },
+          { type: 'arg', index: 0 },
+          {
+            type: 'condition',
+            value: { type: 'arg', index: 1 },
+            children: [
+              { type: 'text', text: 'b' },
+            ]
+          },
+          { type: 'arg', index: 2 },
+          { type: 'text', text: 'c' },
+        ]
+      };
+
+      expect(renderer.renderToTemplateTag(root, [1, false, 2]))
+        .toStrictEqual({
+          strings: ['a', '', 'c'],
+          args: [1, 2]
+        });
+    });
+  });
+});
