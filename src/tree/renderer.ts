@@ -15,6 +15,16 @@ export class QuickRenderer {
   ) {}
 
   // Methods
+  private _renderArg(arg: QuickConst): string {
+    if (Array.isArray(arg) || arg?.toString === Object.prototype.toString) {
+      try {
+        return JSON.stringify(arg);
+      } catch (err) { /* empty */ }
+    }
+
+    return arg === undefined || arg === null ? '' : arg.toString();
+  }
+
   private _renderCommand(child: QuickCommandNode, args: QuickConst[]): string {
     const cmd = this.commands.get(child.name);
 
@@ -46,7 +56,7 @@ export class QuickRenderer {
           break;
 
         case 'arg':
-          result += args[child.index];
+          result += this._renderArg(args[child.index]);
           break;
       }
     }

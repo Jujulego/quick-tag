@@ -7,7 +7,6 @@ export interface TestArg {
   int: number;
   boo: boolean;
   str: string;
-  fun: () => string;
 }
 
 // Setup

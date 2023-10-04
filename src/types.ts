@@ -7,8 +7,7 @@ export type QuickConst =
   | boolean
   | undefined
   | null
-  | Record<string, unknown>
-  | Array<unknown>;
+  | object;
 
 /**
  * Dynamic argument
