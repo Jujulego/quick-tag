@@ -438,7 +438,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jujulego/quick-tag@npm:^0.3.3, @jujulego/quick-tag@workspace:.":
+"@jujulego/quick-tag@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "@jujulego/quick-tag@npm:0.3.3"
+  dependenciesMeta:
+    vitest@0.34.6:
+      unplugged: true
+  checksum: ec8b9f7e46e524412babfc732f960f9ca651f6d256f9deebc5f5129cb70e36d479cbe81edd83baa95f785238592ab74cbd35c305042b8332b917f14286bb2acc
+  languageName: node
+  linkType: hard
+
+"@jujulego/quick-tag@workspace:.":
   version: 0.0.0-use.local
   resolution: "@jujulego/quick-tag@workspace:."
   dependencies:
