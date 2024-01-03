@@ -16,12 +16,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
 
-      - name: Use Node.js 16.x
+      - name: Use Node.js 18.x
         uses: actions/setup-node@v4
         with:
-          node-version: 16.x
+          node-version: 18.x
           cache: yarn
 
       - name: Install
@@ -43,12 +44,13 @@ jobs:
       security-events: write
 
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
 
-      - name: Use Node.js 16.x
+      - name: Use Node.js 18.x
         uses: actions/setup-node@v4
         with:
-          node-version: 16.x
+          node-version: 18.x
           cache: yarn
 
       - name: Install
@@ -68,12 +70,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
 
-      - name: Use Node.js 16.x
+      - name: Use Node.js 18.x
         uses: actions/setup-node@v4
         with:
-          node-version: 16.x
+          node-version: 18.x
           cache: yarn
 
       - name: Install
@@ -99,12 +102,13 @@ jobs:
     needs: [ lint, build, tests ]
 
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
 
-      - name: Use Node.js 16.x
+      - name: Use Node.js 18.x
         uses: actions/setup-node@v4
         with:
-          node-version: 16.x
+          node-version: 18.x
           registry-url: https://registry.npmjs.org
           cache: yarn
 
@@ -127,7 +131,8 @@ jobs:
     needs: [ tests ]
 
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 0
 
@@ -161,7 +166,8 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
 
       - name: Read package.json
         id: info
