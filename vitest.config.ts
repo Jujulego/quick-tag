@@ -1,4 +1,4 @@
-import swc from '@rollup/plugin-swc';
+import { swc } from '@jujulego/vite-plugin-swc';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
@@ -9,7 +9,6 @@ export default defineConfig({
       include: ['src/**'],
       reporter: ['text', 'lcovonly'],
     },
-    globals: true,
     typecheck: {
       tsconfig: 'tests/tsconfig.json',
     }

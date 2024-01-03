@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+
 import { QuickParser } from '@/src/tree/parser.js';
 import { QuickCommand } from '@/src/types.js';
 

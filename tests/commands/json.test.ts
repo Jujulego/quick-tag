@@ -1,4 +1,4 @@
-import { vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { QuickJsonCommand } from '@/src/commands/json.js';
 
@@ -10,7 +10,7 @@ describe('QuickJsonCommand', () => {
 
     expect(QuickJsonCommand.format(obj)).toMatchInlineSnapshot(`
       "{
-        \\"life\\": 42
+        "life": 42
       }"
     `);
 

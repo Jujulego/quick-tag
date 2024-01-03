@@ -1,4 +1,4 @@
-import { expectTypeOf } from 'vitest';
+import { describe, expectTypeOf, it } from 'vitest';
 
 import { Quick } from '@/src/quick.js';
 
