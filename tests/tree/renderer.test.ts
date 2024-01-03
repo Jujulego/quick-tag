@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { QuickRenderer } from '@/src/tree/renderer.js';
 import { QuickCommand } from '@/src/types.js';
 import { QuickRootNode } from '@/src/tree/index.js';

@@ -1,4 +1,4 @@
-import { beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Quick } from '@/src/quick.js';
 import { QuickCommand } from '@/src/types.js';
