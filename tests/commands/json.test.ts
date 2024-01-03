@@ -10,7 +10,7 @@ describe('QuickJsonCommand', () => {
 
     expect(QuickJsonCommand.format(obj)).toMatchInlineSnapshot(`
       "{
-        \\"life\\": 42
+        "life": 42
       }"
     `);
 
