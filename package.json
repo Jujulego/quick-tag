@@ -32,7 +32,7 @@
     "test:types": "vitest typecheck"
   },
   "devDependencies": {
-    "@jujulego/jill": "2.3.5",
+    "@jujulego/jill": "2.5.0",
     "@microsoft/eslint-formatter-sarif": "3.0.0",
     "@rollup/plugin-swc": "0.3.0",
     "@swc/cli": "0.1.63",
