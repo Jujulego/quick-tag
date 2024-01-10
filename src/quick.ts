@@ -1,6 +1,6 @@
+import { QuickWrapper } from './quick-wrapper.js';
 import { QuickParser, QuickRenderer } from './tree/index.js';
 import { QuickArg, QuickCommand, QuickConst, QuickFun, QuickKey } from './types.js';
-import { QuickWrapper } from './quick-wrapper.js';
 
 // Class
 export class Quick {
