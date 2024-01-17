@@ -14,6 +14,6 @@ export function isQuickConst(obj: unknown): obj is QuickConst {
  * Tests if given arg is of QuickInjector type.
  * @param arg
  */
-export function isQuickInjector<T, R>(arg: unknown): arg is QuickInjector<T, R> {
+export function isQuickInjector<A, R = A>(arg: unknown): arg is QuickInjector<A, R> {
   return !!arg && typeof arg === 'function' && QUICK_INJECTOR in arg;
 }
