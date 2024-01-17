@@ -11,8 +11,11 @@ export type QuickFormat<in out A, in O, out R extends QuickConst = QuickConst> =
   <T extends A | QuickInjector<any, A>>(arg: T, opts?: O) => T extends QuickInjector<infer T, A, infer K> ? QuickInjector<T, R, K> : R;
 
 /**
- * Defines a quick format function.
- * Adds support for quick injector.
+ * Defines a quick format function. Adds support for quick injector.
+ *
+ * Quick format functions can only have 2 arguments:
+ * - an objet to format.
+ * - an optional option object.
  */
 export function defineQuickFormat<A, O, R extends QuickConst = QuickConst>(fn: (arg: A, opts?: O) => R): QuickFormat<A, O, R> {
   return ((arg: A | QuickInjector<unknown, A>, opts?: O) => {
