@@ -1,3 +1,5 @@
+import stringify from 'safe-stable-stringify';
+
 import { defineQuickFormat } from '../format.js';
 
 export interface QJsonOpts {
@@ -14,17 +16,7 @@ export interface QJsonOpts {
  */
 export const qjson = defineQuickFormat((arg: unknown, opts: QJsonOpts = {}) => {
   // Replacer
-  const marks = new Set<unknown>();
-
   function replacer(key: string, value: unknown) {
-    if (typeof value === 'object') {
-      if (marks.has(value)) {
-        return '[Circular]';
-      }
-
-      marks.add(value);
-    }
-
     if (value instanceof Error) {
       const error: Record<string, unknown> = {};
 
@@ -38,7 +30,7 @@ export const qjson = defineQuickFormat((arg: unknown, opts: QJsonOpts = {}) => {
     return value;
   }
 
-  return JSON.stringify(arg, replacer, parsePrettyOpt(opts.pretty));
+  return stringify(arg, replacer, parsePrettyOpt(opts.pretty));
 });
 
 // Utils

@@ -5,17 +5,11 @@ import { qjson } from '@/src/formats/qjson.js';
 // Tests
 describe('qjson', () => {
   it('should use JSON.stringify on arg', () => {
-    vi.spyOn(JSON, 'stringify');
-    const obj = { life: 42 };
-
-    expect(qjson(obj)).toMatchInlineSnapshot('"{"life":42}"');
+    expect(qjson({ life: 42 })).toMatchInlineSnapshot('"{"life":42}"');
   });
 
   it('should pretty print result', () => {
-    vi.spyOn(JSON, 'stringify');
-    const obj = { life: 42 };
-
-    expect(qjson(obj, { pretty: true })).toMatchInlineSnapshot(`
+    expect(qjson({ life: 42 }, { pretty: true })).toMatchInlineSnapshot(`
       "{
         "life": 42
       }"
@@ -23,13 +17,24 @@ describe('qjson', () => {
   });
 
   it('should pretty print result using given indentation', () => {
-    vi.spyOn(JSON, 'stringify');
-    const obj = { life: 42 };
-
-    expect(qjson(obj, { pretty: 4 })).toMatchInlineSnapshot(`
+    expect(qjson({ life: 42 }, { pretty: 4 })).toMatchInlineSnapshot(`
       "{
           "life": 42
       }"
     `);
+  });
+
+  it('should support circular references', () => {
+    const obj = { life: 42 };
+    Object.assign(obj, { obj });
+
+    expect(qjson([obj, obj])).toMatchInlineSnapshot('"[{"life":42,"obj":"[Circular]"},{"life":42,"obj":"[Circular]"}]"');
+  });
+
+  it('should support error objects', () => {
+    const err= new Error('Test !');
+    vi.spyOn(err, 'stack', 'get').mockReturnValue('Error: Test!');
+
+    expect(qjson(err)).toMatchInlineSnapshot('"{"message":"Test !","stack":"Error: Test!"}"');
   });
 });
