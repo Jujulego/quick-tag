@@ -13,6 +13,6 @@ export const qerror = defineQuickFormat((err: QuickConst | Error) => {
 });
 
 // Utils
-export function hasStack(err: unknown): err is { stack: string } {
+function hasStack(err: unknown): err is { stack: string } {
   return !!err && typeof err === 'object' && 'stack' in err && typeof err.stack === 'string';
 }
