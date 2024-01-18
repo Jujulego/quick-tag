@@ -12,12 +12,12 @@ export type QuickConst =
 /**
  * Dynamic argument
  */
-export type QuickArg<T> = (arg: T) => QuickConst;
+export type QuickArg<in T> = (arg: T) => QuickConst;
 
 /**
  * Quick formatter function
  */
-export type QuickFun<T = void> = (arg: T) => string;
+export type QuickFun<in T = void> = (arg: T) => string;
 
 /**
  * Extract keys of object to QuickConst values

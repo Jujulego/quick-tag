@@ -1,5 +1,8 @@
 import { QuickCommandNode, QuickParentNode } from './nodes.js';
+import { qjson } from '../formats/index.js';
 import { QuickCommand, QuickConst } from '../types.js';
+import { isQuickInjector } from '../utils/predicates.js';
+import { QUICK_INJECTOR } from '../symbols.js';
 
 // Types
 export interface TemplateTagArgs {
@@ -17,9 +20,7 @@ export class QuickRenderer {
   // Methods
   private _renderArg(arg: QuickConst): string {
     if (Array.isArray(arg) || arg?.toString === Object.prototype.toString) {
-      try {
-        return JSON.stringify(arg);
-      } catch (err) { /* empty */ }
+      arg = qjson(arg);
     }
 
     return arg === undefined || arg === null ? '' : arg.toString();
@@ -35,7 +36,7 @@ export class QuickRenderer {
     return cmd.format(args[child.arg.index]);
   }
 
-  renderToString(tree: QuickParentNode, args: QuickConst[]): string {
+  renderToString(tree: QuickParentNode, args: QuickConst[], condition_value?: QuickConst): string {
     let result = '';
 
     for (const child of tree.children) {
@@ -46,7 +47,7 @@ export class QuickRenderer {
 
         case 'condition':
           if (args[child.value.index]) {
-            result += this.renderToString(child, args);
+            result += this.renderToString(child, args, args[child.value.index]);
           }
 
           break;
@@ -55,9 +56,21 @@ export class QuickRenderer {
           result += child.text;
           break;
 
-        case 'arg':
-          result += this._renderArg(args[child.index]);
+        case 'arg': {
+          const arg = args[child.index];
+
+          if (isQuickInjector<QuickConst>(arg)) {
+            if (arg[QUICK_INJECTOR] !== '$') {
+              throw new Error('Quick string only supports q$ injector');
+            }
+
+            result += this._renderArg(arg(condition_value));
+          } else {
+            result += this._renderArg(arg);
+          }
+
           break;
+        }
       }
     }
 
