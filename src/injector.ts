@@ -16,7 +16,7 @@ export interface QuickInjector<A = any, R = A, K extends string = string> { // e
 /**
  * Injects quick function's argument
  */
-export function qarg<T>(): QuickInjector<T, T, 'arg'> {
+export function qarg<T = any>(): QuickInjector<T, T, 'arg'> { // eslint-disable-line @typescript-eslint/no-explicit-any
   return Object.assign((a: T) => a, {
     [QUICK_INJECTOR]: 'arg' as const,
   });

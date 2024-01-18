@@ -25,11 +25,18 @@ describe('Quick.function', () => {
     expect(formatter()).toBe('life=42');
   });
 
-  it('should inject extracted args into string', () => {
+  it('should inject extracted arg into string', () => {
     // const formatter = quickFunction<TestArg>`life=${(arg) => arg.value}`;
     const formatter = quick.function<TestArg>`life=${(arg) => arg.value}`;
 
     expect(formatter({ value: 42 })).toBe('life=42');
+  });
+
+  it('should inject formatted arg into string', () => {
+    const format = defineQuickFormat((n: number) => n / 7);
+    const formatter = quick.function<number>`life=${format(qarg())}`;
+
+    expect(formatter(42)).toBe('life=6');
   });
 
   describe('quick conditions', () => {
@@ -49,6 +56,23 @@ describe('Quick.function', () => {
       const formatter = quick.function<TestArg>`test #?:${(arg) => arg.value}is #$ so it ?#is successful`;
 
       expect(formatter({ value: true })).toBe('test is true so it is successful');
+    });
+
+    it('should inject reference to condition value using injector', () => {
+      const formatter = quick.function<boolean>`test #?:${qarg()}is ${q$} so it ?#is successful`;
+
+      expect(formatter(true)).toBe('test is true so it is successful');
+    });
+
+    it('should format condition value with format', () => {
+      const fn = vi.fn(() => 'perfect');
+      const format = defineQuickFormat(fn);
+      const formatter = quick.function<boolean>`test #?:${qarg()}is ${format(q$, { life: 42 })} so it ?#is successful`;
+
+      expect(formatter(true))
+        .toBe('test is perfect so it is successful');
+
+      expect(fn).toHaveBeenCalledWith(true, { life: 42 });
     });
   });
 });
@@ -120,7 +144,7 @@ describe('Quick.string', () => {
     it('should throw error for unsupported injector', () => {
       const format = defineQuickFormat(() => 'perfect');
 
-      expect(() => quick.string`test #?:${true}is ${format(qarg<boolean>())} so it ?#is successful`)
+      expect(() => quick.string`test #?:${true}is ${format(qarg())} so it ?#is successful`)
         .toThrow(new Error('Quick string only supports q$ injector'));
     });
 

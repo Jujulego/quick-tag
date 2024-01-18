@@ -1,6 +1,8 @@
 import { QuickWrapper } from './quick-wrapper.js';
 import { QuickParser, QuickRenderer } from './tree/index.js';
 import { QuickArg, QuickCommand, QuickConst, QuickFun, QuickKey } from './types.js';
+import { isQuickInjector } from './utils/predicates.js';
+import { QUICK_INJECTOR } from './symbols.js';
 
 // Class
 export class Quick {
@@ -33,7 +35,19 @@ export class Quick {
     const renderer = this.renderer();
 
     return (arg: T) => {
-      const args = fns.map((fn) => typeof fn === 'function' ? fn(arg) : fn);
+      const args = fns.map((fn) => {
+        if (isQuickInjector(fn)) {
+          if (fn[QUICK_INJECTOR] === 'arg') {
+            return fn(arg);
+          } else {
+            return fn;
+          }
+        } else if (typeof fn === 'function') {
+          return fn(arg);
+        } else {
+          return fn;
+        }
+      });
       return renderer.renderToString(tree, args);
     };
   }
