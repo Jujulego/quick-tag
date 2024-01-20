@@ -1,5 +1,4 @@
-import { QuickCommandNode, QuickConditionNode, QuickParentNode, QuickRootNode } from './nodes.js';
-import { QuickCommand } from '../types.js';
+import { QuickConditionNode, QuickParentNode, QuickRootNode } from './nodes.js';
 
 // Parser
 export class QuickParser {
@@ -10,11 +9,6 @@ export class QuickParser {
   };
 
   private readonly stack: QuickParentNode[] = [this.root];
-
-  // Constructor
-  constructor(
-    private readonly commands: Map<string, QuickCommand>
-  ) {}
 
   // Methods
   private _addArgNode(index: number) {
@@ -35,16 +29,6 @@ export class QuickParser {
 
     this.node.children.push(condition);
     this.stack.push(condition);
-  }
-
-  private _addCommandNode(name: string, argIndex: number) {
-    const command: QuickCommandNode = {
-      type: 'command',
-      name,
-      arg: { type: 'arg', index: argIndex },
-    };
-
-    this.node.children.push(command);
   }
 
   private _searchInsideMarks(text: string): string {
@@ -88,20 +72,6 @@ export class QuickParser {
         continue;
       }
 
-      // Command call on ref => #!{name}$
-      const commandMatch = /^#!([a-z]+)\$/.exec(text.slice(sheIdx));
-
-      if (commandMatch && this.commands.has(commandMatch[1]!)) {
-        // Add previous text
-        this._addTextNode(text.slice(0, sheIdx));
-        usedIdx = startIdx = sheIdx + commandMatch[0]!.length;
-
-        // Add command node
-        this._addCommandNode(commandMatch[1]!, this.node.value.index);
-
-        continue;
-      }
-
       // Ignore this # and search next one
       startIdx = sheIdx + 1;
     }
@@ -117,16 +87,6 @@ export class QuickParser {
       if (text.endsWith('#?:')) {
         this._addTextNode(text.slice(0, -3));
         this._addConditionNode(i);
-
-        continue;
-      }
-
-      // Command call => #!{name}:
-      const commandMatch = /#!([a-z]+):$/.exec(text);
-
-      if (commandMatch && this.commands.has(commandMatch[1]!)) {
-        this._addTextNode(text.slice(0, -commandMatch[0]!.length));
-        this._addCommandNode(commandMatch[1]!, i);
 
         continue;
       }
