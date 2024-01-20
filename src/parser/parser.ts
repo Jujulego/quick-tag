@@ -60,18 +60,6 @@ export class QuickParser {
         continue;
       }
 
-      // Condition value reference => #$
-      if (text[sheIdx + 1] === '$') {
-        // Add previous text
-        this._addTextNode(text.slice(0, sheIdx));
-        usedIdx = startIdx = sheIdx + 2;
-
-        // Add referenced node
-        this.node.children.push(this.node.value);
-
-        continue;
-      }
-
       // Ignore this # and search next one
       startIdx = sheIdx + 1;
     }

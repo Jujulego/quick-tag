@@ -44,12 +44,6 @@ describe('qfun', () => {
       expect(formatter({ value: false })).toBe('test is successful');
     });
 
-    it('should inject reference to condition value', () => {
-      const formatter = qfun<TestArg>`test #?:${qprop('value')}is #$ so it ?#is successful`;
-
-      expect(formatter({ value: true })).toBe('test is true so it is successful');
-    });
-
     it('should inject reference to condition value using injector', () => {
       const formatter = qfun<boolean>`test #?:${qarg()}is ${q$} so it ?#is successful`;
 
@@ -69,7 +63,7 @@ describe('qfun', () => {
   });
 });
 
-describe('Quick.string', () => {
+describe('qstr', () => {
   it('should inject args into string as with classic templates', () => {
     expect(qstr`life=${42}`).toBe('life=42');
   });
@@ -87,10 +81,6 @@ describe('Quick.string', () => {
 
     it('should inject text between #? and ?# has given value is falsy', () => {
       expect(qstr`test #?:${false}is so cool that it ?#is successful`).toBe('test is successful');
-    });
-
-    it('should inject reference to condition value', () => {
-      expect(qstr`test #?:${true}is #$ so it ?#is successful`).toBe('test is true so it is successful');
     });
 
     it('should inject reference to condition value using injector', () => {
