@@ -1,5 +1,5 @@
 import { QuickRenderArg } from './renderers/renderer.js';
-import { QuickParser } from './tree/index.js';
+import { QuickParser } from './parser/index.js';
 import { QuickStringRenderer } from './renderers/string-renderer.js';
 import { QuickArgInjector } from './injector.js';
 import { QuickArg, QuickConst, QuickFun } from './types.js';
@@ -31,8 +31,8 @@ export function qfun<T>(strings: TemplateStringsArray, ...fns: (QuickRenderArg |
  * Parses quick marks and renders template into a string.
  */
 export function qstr(strings: TemplateStringsArray, ...args: QuickRenderArg[]): string {
-  const parser = new QuickParser();
+  const tree = (new QuickParser()).parse(strings);
   const renderer = new QuickStringRenderer();
 
-  return renderer.render(parser.parse(strings), args);
+  return renderer.render(tree, args);
 }

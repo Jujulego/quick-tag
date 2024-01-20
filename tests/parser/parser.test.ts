@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { QuickParser } from '@/src/tree/parser.js';
+import { QuickParser } from '@/src/parser/parser.js';
 
 // Setup
 let parser: QuickParser;

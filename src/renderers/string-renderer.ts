@@ -1,5 +1,5 @@
 import { QuickRenderContext, QuickRenderer } from './renderer.js';
-import { QuickParentNode } from '../tree/index.js';
+import { QuickParentNode } from '../parser/index.js';
 import { QuickConst } from '../types.js';
 import { QuickConditionInjector } from '../injector.js';
 

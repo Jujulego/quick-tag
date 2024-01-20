@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { QuickRootNode } from '@/src/tree/index.js';
+import { QuickRootNode } from '@/src/parser/index.js';
 import { QuickStringRenderer } from '@/src/renderers/string-renderer.js';
 
 // Setup
