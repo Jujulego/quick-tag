@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { QuickJsonCommand } from '@/src/commands/json.js';
+import { QuickConst } from '@/src/types.js';
 
 // Tests
 describe('QuickJsonCommand', () => {
@@ -8,7 +9,7 @@ describe('QuickJsonCommand', () => {
     vi.spyOn(JSON, 'stringify');
     const obj = { life: 42 };
 
-    expect(QuickJsonCommand.format(obj)).toMatchInlineSnapshot(`
+    expect(QuickJsonCommand.format(obj as unknown as QuickConst)).toMatchInlineSnapshot(`
       "{
         "life": 42
       }"

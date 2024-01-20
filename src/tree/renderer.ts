@@ -1,8 +1,7 @@
 import { QuickCommandNode, QuickParentNode } from './nodes.js';
-import { qjson } from '../formats/index.js';
 import { QuickCommand, QuickConst } from '../types.js';
-import { isQuickInjector } from '../utils/predicates.js';
-import { QUICK_INJECTOR } from '../symbols.js';
+import { isQuickConditionInjector } from '../utils/predicates.js';
+import type { QuickConditionInjector } from '../injector.js';
 
 // Types
 export interface TemplateTagArgs {
@@ -18,73 +17,67 @@ export class QuickRenderer {
   ) {}
 
   // Methods
-  private _renderArg(arg: QuickConst): string {
-    if (Array.isArray(arg) || arg?.toString === Object.prototype.toString) {
-      arg = qjson(arg);
+  private _callInjector(arg: QuickConst | QuickConditionInjector, conditionValue?: QuickConst): QuickConst {
+    if (isQuickConditionInjector(arg)) {
+      return arg(conditionValue);
+    } else {
+      return arg;
     }
+  }
 
+  private _renderArg(arg: QuickConst): string {
     return arg === undefined || arg === null ? '' : arg.toString();
   }
 
-  private _renderCommand(child: QuickCommandNode, args: QuickConst[]): string {
+  private _renderCommand(child: QuickCommandNode, arg: QuickConst): string {
     const cmd = this.commands.get(child.name);
 
     if (!cmd) {
       return '';
     }
 
-    return cmd.format(args[child.arg.index]);
+    return cmd.format(arg);
   }
 
-  renderToString(tree: QuickParentNode, args: QuickConst[], condition_value?: QuickConst): string {
+  renderToString(tree: QuickParentNode, args: (QuickConst | QuickConditionInjector)[], conditionValue?: QuickConst): string {
     let result = '';
 
-    for (const child of tree.children) {
-      switch (child.type) {
-        case 'command':
-          result += this._renderCommand(child, args);
-          break;
+    for (const child of tree.children) switch (child.type) {
+      case 'command':
+        result += this._renderCommand(child, this._callInjector(args[child.arg.index], conditionValue));
+        break;
 
-        case 'condition':
-          if (args[child.value.index]) {
-            result += this.renderToString(child, args, args[child.value.index]);
-          }
+      case 'condition': {
+        const value = this._callInjector(args[child.value.index], conditionValue);
 
-          break;
-
-        case 'text':
-          result += child.text;
-          break;
-
-        case 'arg': {
-          const arg = args[child.index];
-
-          if (isQuickInjector<QuickConst>(arg)) {
-            if (arg[QUICK_INJECTOR] !== '$') {
-              throw new Error('Quick string only supports q$ injector');
-            }
-
-            result += this._renderArg(arg(condition_value));
-          } else {
-            result += this._renderArg(arg);
-          }
-
-          break;
+        if (args[child.value.index]) {
+          result += this.renderToString(child, args, value);
         }
+
+        break;
+      }
+
+      case 'text':
+        result += child.text;
+        break;
+
+      case 'arg': {
+        result += this._renderArg(this._callInjector(args[child.index], conditionValue));
+        break;
       }
     }
 
     return result;
   }
 
-  renderToTemplateTag(tree: QuickParentNode, args: QuickConst[]): TemplateTagArgs {
+  renderToTemplateTag(tree: QuickParentNode, args: (QuickConst | QuickConditionInjector)[], conditionValue?: QuickConst): TemplateTagArgs {
     const strings: string[] = [];
     const tagArgs: QuickConst[] = [];
 
     for (const child of tree.children) {
       switch (child.type) {
         case 'command': {
-          const arg = this._renderCommand(child, args);
+          const arg = this._renderCommand(child, this._callInjector(args[child.arg.index], conditionValue));
 
           if (arg) {
             tagArgs.push(arg);
@@ -97,9 +90,11 @@ export class QuickRenderer {
           break;
         }
 
-        case 'condition':
-          if (args[child.value.index]) {
-            const cond = this.renderToTemplateTag(child, args);
+        case 'condition': {
+          const value = this._callInjector(args[child.value.index], conditionValue);
+
+          if (value) {
+            const cond = this.renderToTemplateTag(child, args, value);
 
             if (strings.length > tagArgs.length) {
               strings[strings.length - 1] += cond.strings[0];
@@ -112,6 +107,7 @@ export class QuickRenderer {
           }
 
           break;
+        }
 
         case 'text':
           if (strings.length > tagArgs.length) {
@@ -123,7 +119,7 @@ export class QuickRenderer {
           break;
 
         case 'arg':
-          tagArgs.push(args[child.index]);
+          tagArgs.push(this._callInjector(args[child.index], conditionValue));
 
           if (tagArgs.length > strings.length) {
             strings.push('');
