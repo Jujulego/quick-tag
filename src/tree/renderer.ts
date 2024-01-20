@@ -1,5 +1,5 @@
-import { QuickCommandNode, QuickParentNode } from './nodes.js';
-import { QuickCommand, QuickConst } from '../types.js';
+import { QuickParentNode } from './nodes.js';
+import { QuickConst } from '../types.js';
 import { isQuickConditionInjector } from '../utils/predicates.js';
 import type { QuickConditionInjector } from '../injector.js';
 
@@ -11,11 +11,6 @@ export interface TemplateTagArgs {
 
 // Renderer
 export class QuickRenderer {
-  // Constructor
-  constructor(
-    private readonly commands: Map<string, QuickCommand>
-  ) {}
-
   // Methods
   private _callInjector(arg: QuickConst | QuickConditionInjector, conditionValue?: QuickConst): QuickConst {
     if (isQuickConditionInjector(arg)) {
@@ -29,24 +24,10 @@ export class QuickRenderer {
     return arg === undefined || arg === null ? '' : arg.toString();
   }
 
-  private _renderCommand(child: QuickCommandNode, arg: QuickConst): string {
-    const cmd = this.commands.get(child.name);
-
-    if (!cmd) {
-      return '';
-    }
-
-    return cmd.format(arg);
-  }
-
   renderToString(tree: QuickParentNode, args: (QuickConst | QuickConditionInjector)[], conditionValue?: QuickConst): string {
     let result = '';
 
     for (const child of tree.children) switch (child.type) {
-      case 'command':
-        result += this._renderCommand(child, this._callInjector(args[child.arg.index], conditionValue));
-        break;
-
       case 'condition': {
         const value = this._callInjector(args[child.value.index], conditionValue);
 
@@ -76,20 +57,6 @@ export class QuickRenderer {
 
     for (const child of tree.children) {
       switch (child.type) {
-        case 'command': {
-          const arg = this._renderCommand(child, this._callInjector(args[child.arg.index], conditionValue));
-
-          if (arg) {
-            tagArgs.push(arg);
-          }
-
-          if (tagArgs.length > strings.length) {
-            strings.push('');
-          }
-
-          break;
-        }
-
         case 'condition': {
           const value = this._callInjector(args[child.value.index], conditionValue);
 

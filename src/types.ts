@@ -22,11 +22,3 @@ export type QuickFun<in T = void> = (arg: T) => string;
  * Extract keys of object to QuickConst values
  */
 export type QuickKey<T> = { [K in keyof T]: T[K] extends QuickConst ? K : never }[keyof T];
-
-/**
- * Registrable quick command
- */
-export interface QuickCommand {
-  name: string;
-  format: (arg: QuickConst) => string;
-}

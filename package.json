@@ -28,8 +28,7 @@
     "build": "jill group 'build:esm // build:types'",
     "build:esm": "swc -d dist src",
     "build:types": "tsc --project tsconfig.build.json",
-    "test": "vitest run",
-    "test:types": "vitest typecheck"
+    "test": "vitest run --typecheck"
   },
   "dependencies": {
     "@swc/helpers": "^0.5.3",

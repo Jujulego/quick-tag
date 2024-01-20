@@ -20,11 +20,5 @@ export interface QuickConditionNode {
   children: QuickChildrenNode[];
 }
 
-export interface QuickCommandNode {
-  type: 'command';
-  name: string;
-  arg: QuickArgNode;
-}
-
 export type QuickParentNode = QuickRootNode | QuickConditionNode;
-export type QuickChildrenNode = QuickTextNode | QuickArgNode | QuickConditionNode | QuickCommandNode;
+export type QuickChildrenNode = QuickTextNode | QuickArgNode | QuickConditionNode;

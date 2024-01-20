@@ -1,10 +1,7 @@
-import { QuickJsonCommand } from './commands/index.js';
 import { Quick } from './quick.js';
 
 // Global instance
 export const quick = new Quick();
-
-quick.register(QuickJsonCommand);
 
 // Aliases
 /**

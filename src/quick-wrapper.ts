@@ -1,21 +1,20 @@
 import { QuickParser, QuickRenderer } from './tree/index.js';
-import { QuickArg, QuickCommand, QuickConst, QuickKey } from './types.js';
+import { QuickArg, QuickConst, QuickKey } from './types.js';
 
 // Class
 export class QuickWrapper<R> {
   // Constructor
   constructor(
     private readonly wrapped: (strings: TemplateStringsArray, ...args: QuickConst[]) => R,
-    private readonly commands: Map<string, QuickCommand>
   ) {}
 
   // Methods
   parser(): QuickParser {
-    return new QuickParser(this.commands);
+    return new QuickParser();
   }
 
   renderer(): QuickRenderer {
-    return new QuickRenderer(this.commands);
+    return new QuickRenderer();
   }
 
   /**
@@ -35,6 +34,7 @@ export class QuickWrapper<R> {
 
   /**
    * Quick property extractor
+   * @deprecated use qprop injector
    */
   property<T>(key: QuickKey<T>): QuickArg<T> {
     return (arg: T) => arg[key] as QuickConst;

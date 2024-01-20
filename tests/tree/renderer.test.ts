@@ -1,16 +1,13 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { QuickRenderer } from '@/src/tree/renderer.js';
-import { QuickCommand } from '@/src/types.js';
 import { QuickRootNode } from '@/src/tree/index.js';
 
 // Setup
-let commands: Map<string, QuickCommand>;
 let renderer: QuickRenderer;
 
 beforeEach(() => {
-  commands = new Map();
-  renderer = new QuickRenderer(commands);
+  renderer = new QuickRenderer();
 });
 
 // Tests
@@ -29,55 +26,6 @@ describe('QuickRenderer.renderToString', () => {
 
     expect(renderer.renderToString(root, [1, 2]))
       .toBe('a1b2c');
-  });
-
-  describe('with a command', () => {
-    it('should call command format on argument and inject result in final string', () => {
-      const root: QuickRootNode = { // qstr`a${1}#!life:${2}c`
-        type: 'root',
-        children: [
-          { type: 'text', text: 'a' },
-          { type: 'arg', index: 0 },
-          {
-            type: 'command',
-            name: 'life',
-            arg: { type: 'arg', index: 1 },
-          },
-          { type: 'text', text: 'c' },
-        ]
-      };
-
-      const command: QuickCommand = {
-        name: 'life',
-        format: vi.fn(() => 'life'),
-      };
-
-      commands.set('life', command);
-
-      expect(renderer.renderToString(root, [1, 42]))
-        .toBe('a1lifec');
-
-      expect(command.format).toHaveBeenCalledWith(42);
-    });
-
-    it('should ignore unknown command', () => {
-      const root: QuickRootNode = { // qstr`a${1}#!life:${2}c`
-        type: 'root',
-        children: [
-          { type: 'text', text: 'a' },
-          { type: 'arg', index: 0 },
-          {
-            type: 'command',
-            name: 'life',
-            arg: { type: 'arg', index: 1 },
-          },
-          { type: 'text', text: 'c' },
-        ]
-      };
-
-      expect(renderer.renderToString(root, [1, 42]))
-        .toBe('a1c');
-    });
   });
 
   describe('with a condition', () => {
@@ -148,65 +96,6 @@ describe('QuickRenderer.renderToTemplateTag', () => {
         }),
         args: [1, 2, 3]
       });
-  });
-
-  describe('with a command', () => {
-    it('should call command format on argument and inject result in final string', () => {
-      const root: QuickRootNode = { // qstr`a${1}#!life:${2}c`
-        type: 'root',
-        children: [
-          { type: 'text', text: 'a' },
-          { type: 'arg', index: 0 },
-          {
-            type: 'command',
-            name: 'life',
-            arg: { type: 'arg', index: 1 },
-          },
-          { type: 'text', text: 'c' },
-        ]
-      };
-
-      const command: QuickCommand = {
-        name: 'life',
-        format: vi.fn(() => 'life'),
-      };
-
-      commands.set('life', command);
-
-      expect(renderer.renderToTemplateTag(root, [1, 42]))
-        .toEqual({
-          strings: Object.assign(['a', '', 'c'], {
-            raw: ['a', '', 'c'],
-          }),
-          args: [1, 'life'],
-        });
-
-      expect(command.format).toHaveBeenCalledWith(42);
-    });
-
-    it('should ignore unknown command', () => {
-      const root: QuickRootNode = { // qstr`a${1}#!life:${2}c`
-        type: 'root',
-        children: [
-          { type: 'text', text: 'a' },
-          { type: 'arg', index: 0 },
-          {
-            type: 'command',
-            name: 'life',
-            arg: { type: 'arg', index: 1 },
-          },
-          { type: 'text', text: 'c' },
-        ]
-      };
-
-      expect(renderer.renderToTemplateTag(root, [1, 42]))
-        .toEqual({
-          strings: Object.assign(['a', 'c'], {
-            raw: ['a', 'c'],
-          }),
-          args: [1]
-        });
-    });
   });
 
   describe('with a condition', () => {
