@@ -1,12 +1,22 @@
 import { defineQuickFormat } from '../format.js';
-import { QuickConst } from '../types.js';
+import { isQuickConst } from '../utils/predicates.js';
+import { qjson, QJsonOpts } from './qjson.js';
 
 /**
- * Prints error's stack if any or use `toString()` to format object
+ * Returns error's stack if any.
+ * If err is a valid {@link QuickConst}, return it as is, else it will use {@link qjson} to stringify it.
  */
-export const qerror = defineQuickFormat((err: QuickConst | Error) => {
-  if (err instanceof Error || hasStack(err)) {
+export const qerror = defineQuickFormat((err: unknown, opts?: QJsonOpts) => {
+  if (err instanceof Error) {
     return err.stack;
+  }
+
+  if (!isQuickConst(err)) {
+    if (hasStack(err)) {
+      return err.stack;
+    } else {
+      return qjson(err, opts);
+    }
   }
 
   return err;

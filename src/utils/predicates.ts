@@ -7,7 +7,7 @@ import { QUICK_ARG_INJECTOR, QUICK_CONDITION_INJECTOR } from '../symbols.js';
  * @param obj
  */
 export function isQuickConst(obj: unknown): obj is QuickConst {
-  return ['boolean', 'number', 'string', 'undefined', 'object'].includes(typeof obj);
+  return obj === null || ['boolean', 'number', 'string', 'undefined'].includes(typeof obj);
 }
 
 /**

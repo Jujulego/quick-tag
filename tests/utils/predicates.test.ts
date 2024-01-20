@@ -25,8 +25,8 @@ describe('isQuickConst', () => {
     expect(isQuickConst(null)).toBe(true);
   });
 
-  it('should return true for an object', () => {
-    expect(isQuickConst({ life: 42 })).toBe(true);
+  it('should return false for an object', () => {
+    expect(isQuickConst({ life: 42 })).toBe(false);
   });
 
   it('should return false for a qarg', () => {

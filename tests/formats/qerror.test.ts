@@ -17,9 +17,13 @@ describe('qerror', () => {
     expect(qerror(err)).toBe('Error: Test!');
   });
 
-  it('should return object if it has no stack property', () => {
+  it('should return json object if object has no stack property', () => {
     const obj= { life: 42 };
 
-    expect(qerror(obj)).toBe(obj);
+    expect(qerror(obj)).toMatchInlineSnapshot('"{"life":42}"');
+  });
+
+  it('should return value', () => {
+    expect(qerror(42)).toBe(42);
   });
 });
