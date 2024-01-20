@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { defineQuickFormat } from '@/src/format.js';
-import { q$, qarg } from '@/src/injector.js';
+import { q$, qarg, qprop } from '@/src/injector.js';
 import { Quick } from '@/src/quick.js';
 import { QuickCommand } from '@/src/types.js';
 
@@ -27,33 +27,33 @@ describe('Quick.function', () => {
 
   it('should inject extracted arg into string', () => {
     // const formatter = quickFunction<TestArg>`life=${(arg) => arg.value}`;
-    const formatter = quick.function<TestArg>`life=${(arg) => arg.value}`;
+    const formatter = quick.function<TestArg>`life=${qprop('value')}`;
 
     expect(formatter({ value: 42 })).toBe('life=42');
   });
 
   it('should inject formatted arg into string', () => {
     const format = defineQuickFormat((n: number) => n / 7);
-    const formatter = quick.function<number>`life=${format(qarg())}`;
+    const formatter = quick.function<number>`life=${format(qarg<number>())}`;
 
     expect(formatter(42)).toBe('life=6');
   });
 
   describe('quick conditions', () => {
     it('should inject text between #? and ?# has given value is truthy', () => {
-      const formatter = quick.function<TestArg>`test #?:${(arg) => arg.value}is so cool that it ?#is successful`;
+      const formatter = quick.function<TestArg>`test #?:${qprop('value')}is so cool that it ?#is successful`;
 
       expect(formatter({ value: true })).toBe('test is so cool that it is successful');
     });
 
     it('should inject text between #? and ?# has given value is falsy', () => {
-      const formatter = quick.function<TestArg>`test #?:${(arg) => arg.value}is so cool that it ?#is successful`;
+      const formatter = quick.function<TestArg>`test #?:${qprop('value')}is so cool that it ?#is successful`;
 
       expect(formatter({ value: false })).toBe('test is successful');
     });
 
     it('should inject reference to condition value', () => {
-      const formatter = quick.function<TestArg>`test #?:${(arg) => arg.value}is #$ so it ?#is successful`;
+      const formatter = quick.function<TestArg>`test #?:${qprop('value')}is #$ so it ?#is successful`;
 
       expect(formatter({ value: true })).toBe('test is true so it is successful');
     });
@@ -67,9 +67,9 @@ describe('Quick.function', () => {
     it('should format condition value with format', () => {
       const fn = vi.fn(() => 'perfect');
       const format = defineQuickFormat(fn);
-      const formatter = quick.function<boolean>`test #?:${qarg()}is ${format(q$, { life: 42 })} so it ?#is successful`;
+      const formatter = quick.function<TestArg>`test #?:${qprop('value')}is ${format(q$, { life: 42 })} so it ?#is successful`;
 
-      expect(formatter(true))
+      expect(formatter({ value: true }))
         .toBe('test is perfect so it is successful');
 
       expect(fn).toHaveBeenCalledWith(true, { life: 42 });
@@ -139,13 +139,6 @@ describe('Quick.string', () => {
         .toBe('test is perfect so it is successful');
 
       expect(fn).toHaveBeenCalledWith(true, { life: 42 });
-    });
-
-    it('should throw error for unsupported injector', () => {
-      const format = defineQuickFormat(() => 'perfect');
-
-      expect(() => quick.string`test #?:${true}is ${format(qarg())} so it ?#is successful`)
-        .toThrow(new Error('Quick string only supports q$ injector'));
     });
 
     it('should format reference with JSON.stringify', () => {

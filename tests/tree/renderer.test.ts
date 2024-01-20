@@ -31,47 +31,6 @@ describe('QuickRenderer.renderToString', () => {
       .toBe('a1b2c');
   });
 
-  it('should render arrays as json', () => {
-    const root: QuickRootNode = { // qstr`${['a', 1]}`
-      type: 'root',
-      children: [
-        { type: 'arg', index: 0 },
-      ]
-    };
-
-    expect(renderer.renderToString(root, [['a', 1]]))
-      .toBe(JSON.stringify(['a', 1]));
-  });
-
-  it('should render objects as json', () => {
-    const root: QuickRootNode = { // qstr`${{ a: 1 }}`
-      type: 'root',
-      children: [
-        { type: 'arg', index: 0 },
-      ]
-    };
-
-    expect(renderer.renderToString(root, [{ a: 1 }]))
-      .toBe(JSON.stringify({ a: 1 }));
-  });
-
-  it('should render with custom toString function', () => {
-    const obj = new class { toString() { return 'cool'; } };
-    vi.spyOn(obj, 'toString');
-
-    const root: QuickRootNode = { // qstr`${obj}`
-      type: 'root',
-      children: [
-        { type: 'arg', index: 0 },
-      ]
-    };
-
-    expect(renderer.renderToString(root, [obj]))
-      .toBe('cool');
-
-    expect(obj.toString).toHaveBeenCalled();
-  });
-
   describe('with a command', () => {
     it('should call command format on argument and inject result in final string', () => {
       const root: QuickRootNode = { // qstr`a${1}#!life:${2}c`

@@ -6,8 +6,7 @@ export type QuickConst =
   | number
   | boolean
   | undefined
-  | null
-  | object;
+  | null;
 
 /**
  * Dynamic argument

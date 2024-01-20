@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { isQuickConst, isQuickInjector } from '@/src/utils/predicates.js';
+import { isQuickArgInjector, isQuickConditionInjector, isQuickConst } from '@/src/utils/predicates.js';
 import { q$, qarg } from '@/src/injector.js';
 
 // Tests
@@ -46,44 +46,85 @@ describe('isQuickConst', () => {
   });
 });
 
-describe('isQuickInjector', () => {
+describe('isQuickArgInjector', () => {
   it('should return true for a qarg', () => {
-    expect(isQuickInjector(qarg())).toBe(true);
+    expect(isQuickArgInjector(qarg())).toBe(true);
   });
 
-  it('should return true for a q$', () => {
-    expect(isQuickInjector(q$)).toBe(true);
+  it('should return false for a q$', () => {
+    expect(isQuickArgInjector(q$)).toBe(false);
   });
 
   it('should return false for a boolean', () => {
-    expect(isQuickInjector(false)).toBe(false);
+    expect(isQuickArgInjector(false)).toBe(false);
   });
 
   it('should return false for a number', () => {
-    expect(isQuickInjector(42)).toBe(false);
+    expect(isQuickArgInjector(42)).toBe(false);
   });
 
   it('should return false for a string', () => {
-    expect(isQuickInjector('life')).toBe(false);
+    expect(isQuickArgInjector('life')).toBe(false);
   });
 
   it('should return false for undefined', () => {
-    expect(isQuickInjector(undefined)).toBe(false);
+    expect(isQuickArgInjector(undefined)).toBe(false);
   });
 
   it('should return false for null', () => {
-    expect(isQuickInjector(null)).toBe(false);
+    expect(isQuickArgInjector(null)).toBe(false);
   });
 
   it('should return false for an object', () => {
-    expect(isQuickInjector({ life: 42 })).toBe(false);
+    expect(isQuickArgInjector({ life: 42 })).toBe(false);
   });
 
   it('should return false for a symbol', () => {
-    expect(isQuickConst(Symbol('test'))).toBe(false);
+    expect(isQuickArgInjector(Symbol('test'))).toBe(false);
   });
 
   it('should return false for a function', () => {
-    expect(isQuickConst(() => null)).toBe(false);
+    expect(isQuickArgInjector(() => null)).toBe(false);
+  });
+});
+describe('isQuickConditionInjector', () => {
+  it('should return false for a qarg', () => {
+    expect(isQuickConditionInjector(qarg())).toBe(false);
+  });
+
+  it('should return true for a q$', () => {
+    expect(isQuickConditionInjector(q$)).toBe(true);
+  });
+
+  it('should return false for a boolean', () => {
+    expect(isQuickConditionInjector(false)).toBe(false);
+  });
+
+  it('should return false for a number', () => {
+    expect(isQuickConditionInjector(42)).toBe(false);
+  });
+
+  it('should return false for a string', () => {
+    expect(isQuickConditionInjector('life')).toBe(false);
+  });
+
+  it('should return false for undefined', () => {
+    expect(isQuickConditionInjector(undefined)).toBe(false);
+  });
+
+  it('should return false for null', () => {
+    expect(isQuickConditionInjector(null)).toBe(false);
+  });
+
+  it('should return false for an object', () => {
+    expect(isQuickConditionInjector({ life: 42 })).toBe(false);
+  });
+
+  it('should return false for a symbol', () => {
+    expect(isQuickConditionInjector(Symbol('test'))).toBe(false);
+  });
+
+  it('should return false for a function', () => {
+    expect(isQuickConditionInjector(() => null)).toBe(false);
   });
 });

@@ -1,30 +1,45 @@
-import { QuickConst } from './types.js';
-import { QUICK_INJECTOR } from './symbols.js';
+import { QuickConst, QuickKey } from './types.js';
+import { QUICK_ARG_INJECTOR, QUICK_CONDITION_INJECTOR } from './symbols.js';
 
 /**
- * Argument injector
+ * Quick argument injector
  */
-export interface QuickInjector<A = any, R = A, K extends string = string> { // eslint-disable-line @typescript-eslint/no-explicit-any
+export interface QuickArgInjector<A = any, R = A> { // eslint-disable-line @typescript-eslint/no-explicit-any
   (arg: A): R;
 
-  /**
-   * Mark, indicating kind of injector
-   */
-  [QUICK_INJECTOR]: K;
+  [QUICK_ARG_INJECTOR]: true;
+}
+
+/**
+ * Quick condition injector
+ */
+export interface QuickConditionInjector<R = QuickConst> {
+  (arg: QuickConst): R;
+
+  [QUICK_CONDITION_INJECTOR]: true;
 }
 
 /**
  * Injects quick function's argument
  */
-export function qarg<T = any>(): QuickInjector<T, T, 'arg'> { // eslint-disable-line @typescript-eslint/no-explicit-any
+export function qarg<T>(): QuickArgInjector<T> {
   return Object.assign((a: T) => a, {
-    [QUICK_INJECTOR]: 'arg' as const,
+    [QUICK_ARG_INJECTOR]: true as const,
+  });
+}
+
+/**
+ * Injects quick function's argument property
+ */
+export function qprop<T, const K extends QuickKey<T>>(key: K): QuickArgInjector<T, T[K]> {
+  return Object.assign((a: T) => a[key], {
+    [QUICK_ARG_INJECTOR]: true as const,
   });
 }
 
 /**
  * Injects last condition value. Injects `null` if used outside a condition.
  */
-export const q$: QuickInjector<QuickConst, QuickConst, '$'> = Object.assign((a: QuickConst) => a, {
-  [QUICK_INJECTOR]: '$' as const,
+export const q$: QuickConditionInjector = Object.assign((a: QuickConst) => a, {
+  [QUICK_CONDITION_INJECTOR]: true as const,
 });

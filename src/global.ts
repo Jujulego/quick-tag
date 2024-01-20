@@ -13,11 +13,6 @@ quick.register(QuickJsonCommand);
 export const qfun = quick.function.bind(quick);
 
 /**
- * Quick property extractor
- */
-export const qprop = quick.property.bind(quick);
-
-/**
  * Parses quick marks and renders template into a string
  */
 export const qstr = quick.string.bind(quick);
