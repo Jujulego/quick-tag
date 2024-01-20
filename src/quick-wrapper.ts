@@ -1,51 +1,44 @@
-import { QuickParser, QuickRenderer } from './tree/index.js';
-import { QuickArg, QuickConst, QuickKey } from './types.js';
+import { QuickParser } from './parser/index.js';
+import { QuickArg, QuickConst } from './types.js';
+import { QuickTemplateRenderer } from './renderers/template-renderer.js';
 
 // Class
 export class QuickWrapper<R> {
+  // Attributes
+  private readonly _renderer = new QuickTemplateRenderer();
+
   // Constructor
   constructor(
     private readonly wrapped: (strings: TemplateStringsArray, ...args: QuickConst[]) => R,
   ) {}
 
   // Methods
-  parser(): QuickParser {
-    return new QuickParser();
-  }
-
-  renderer(): QuickRenderer {
-    return new QuickRenderer();
-  }
-
   /**
    * Parses quick marks and builds a formatter function
    */
-  function<T = void>(strings: TemplateStringsArray, ...fns: (QuickArg<T> | QuickConst)[]): (arg: T) => R {
-    const tree = this.parser().parse(strings);
-    const renderer = this.renderer();
+  fun<T = void>(strings: TemplateStringsArray, ...fns: (QuickArg<T> | QuickConst)[]): (arg: T) => R {
+    const tree = (new QuickParser()).parse(strings);
 
     return (arg: T) => {
       const args = fns.map((fn) => typeof fn === 'function' ? fn(arg) : fn);
-      const tag = renderer.renderToTemplateTag(tree, args);
+      const tag = this._renderer.render(tree, args);
 
       return this.wrapped(tag.strings, ...tag.args);
     };
   }
 
   /**
-   * Quick property extractor
-   * @deprecated use qprop injector
-   */
-  property<T>(key: QuickKey<T>): QuickArg<T> {
-    return (arg: T) => arg[key] as QuickConst;
-  }
-
-  /**
    * Parses quick marks and renders template into a string
    */
-  string(strings: TemplateStringsArray, ...args: QuickConst[]): R {
-    const tag = this.renderer().renderToTemplateTag(this.parser().parse(strings), args);
+  str(strings: TemplateStringsArray, ...args: QuickConst[]): R {
+    const tree = (new QuickParser()).parse(strings);
+    const tag = this._renderer.render(tree, args);
 
     return this.wrapped(tag.strings, ...tag.args);
   }
+}
+
+// Builder
+export function qwrap<R>(wrapped: (strings: TemplateStringsArray, ...args: QuickConst[]) => R): QuickWrapper<R> {
+  return new QuickWrapper<R>(wrapped);
 }
