@@ -1,4 +1,3 @@
-export * from './commands/index.js';
 export * from './formats/index.js';
 export * from './format.js';
 export * from './global.js';
