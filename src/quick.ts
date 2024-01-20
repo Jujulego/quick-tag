@@ -1,30 +1,22 @@
 import { QuickWrapper } from './quick-wrapper.js';
 import { QuickParser, QuickRenderer } from './tree/index.js';
-import { QuickArg, QuickCommand, QuickConst, QuickFun, QuickKey } from './types.js';
+import { QuickArg, QuickConst, QuickFun, QuickKey } from './types.js';
 import { isQuickConditionInjector } from './utils/predicates.js';
 import { QuickArgInjector, QuickConditionInjector } from './injector.js';
 
 // Class
 export class Quick {
-  // Attributes
-  private readonly _commands = new Map<string, QuickCommand>();
-
   // Methods
-  register(command: QuickCommand): this {
-    this._commands.set(command.name, command);
-    return this;
-  }
-
   parser(): QuickParser {
-    return new QuickParser(this._commands);
+    return new QuickParser();
   }
 
   renderer(): QuickRenderer {
-    return new QuickRenderer(this._commands);
+    return new QuickRenderer();
   }
 
   wrap<R>(tag: (strings: TemplateStringsArray, ...args: (QuickConst | QuickConditionInjector)[]) => R): QuickWrapper<R> {
-    return new QuickWrapper<R>(tag, this._commands);
+    return new QuickWrapper<R>(tag);
   }
 
   /**
@@ -37,7 +29,7 @@ export class Quick {
     return (arg: T) => {
       const args = fns.map((fn) => {
         if (isQuickConditionInjector(fn)) {
-          return fn as QuickConditionInjector;
+          return fn;
         } else if (typeof fn === 'function') {
           return (fn as QuickArg<T>)(arg);
         } else {
