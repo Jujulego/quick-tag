@@ -1,7 +1,6 @@
-import { QuickConst } from '../types.js';
-import { QuickConditionInjector } from '../injector.js';
-import { isQuickConditionInjector } from '../utils/predicates.js';
 import { QuickParentNode } from '../parser/index.js';
+import { QuickConditionInjector, QuickConst } from '../types.js';
+import { isQuickConditionInjector } from '../utils/predicates.js';
 
 // Types
 export type QuickRenderArg = QuickConst | QuickConditionInjector;
