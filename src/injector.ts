@@ -1,23 +1,5 @@
-import { QuickConst } from './types.js';
+import { QuickArgInjector, QuickConditionInjector, QuickConst } from './types.js';
 import { QUICK_ARG_INJECTOR, QUICK_CONDITION_INJECTOR } from './symbols.js';
-
-/**
- * Quick argument injector
- */
-export interface QuickArgInjector<A = any, R = A> { // eslint-disable-line @typescript-eslint/no-explicit-any
-  (arg: A): R;
-
-  [QUICK_ARG_INJECTOR]: true;
-}
-
-/**
- * Quick condition injector
- */
-export interface QuickConditionInjector<R = QuickConst> {
-  (arg: QuickConst): R;
-
-  [QUICK_CONDITION_INJECTOR]: true;
-}
 
 /**
  * Injects quick function's argument

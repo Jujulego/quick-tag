@@ -1,5 +1,4 @@
-import { QuickConst } from './types.js';
-import { QuickArgInjector, QuickConditionInjector } from './injector.js';
+import { QuickArgInjector, QuickConditionInjector, QuickConst } from './types.js';
 import { QUICK_ARG_INJECTOR, QUICK_CONDITION_INJECTOR } from './symbols.js';
 import { isQuickArgInjector, isQuickConditionInjector } from './utils/predicates.js';
 

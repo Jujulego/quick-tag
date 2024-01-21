@@ -1,9 +1,8 @@
 import { QuickRenderArg } from './renderers/renderer.js';
 import { QuickParser } from './parser/index.js';
 import { QuickStringRenderer } from './renderers/string-renderer.js';
-import { QuickArgInjector } from './injector.js';
-import { QuickArg, QuickConst, QuickFun } from './types.js';
-import { isQuickConditionInjector } from './utils/predicates.js';
+import { QuickArgInjector, QuickConst, QuickFun } from './types.js';
+import { isQuickArgInjector } from './utils/predicates.js';
 
 /**
  * Parses quick marks and builds a formatter function.
@@ -14,13 +13,7 @@ export function qfun<T>(strings: TemplateStringsArray, ...fns: (QuickRenderArg |
 
   return (arg: T) => {
     const args = fns.map((fn) => {
-      if (isQuickConditionInjector(fn)) {
-        return fn;
-      } else if (typeof fn === 'function') {
-        return (fn as QuickArg<T>)(arg);
-      } else {
-        return fn;
-      }
+      return isQuickArgInjector<T, QuickConst>(fn) ? fn(arg) : fn;
     });
 
     return renderer.render(tree, args);
