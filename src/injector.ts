@@ -1,4 +1,4 @@
-import { QuickConst, QuickKey } from './types.js';
+import { QuickConst } from './types.js';
 import { QUICK_ARG_INJECTOR, QUICK_CONDITION_INJECTOR } from './symbols.js';
 
 /**
@@ -31,7 +31,7 @@ export function qarg<T>(): QuickArgInjector<T> {
 /**
  * Injects quick function's argument property
  */
-export function qprop<T, const K extends QuickKey<T>>(key: K): QuickArgInjector<T, T[K]> {
+export function qprop<T = Record<string, unknown>, const K extends keyof T = keyof T>(key: K): QuickArgInjector<T, T[K]> {
   return Object.assign((a: T) => a[key], {
     [QUICK_ARG_INJECTOR]: true as const,
   });
