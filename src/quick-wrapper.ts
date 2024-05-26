@@ -1,7 +1,6 @@
 import { QuickParser } from './parser/index.js';
 import { QuickArgInjector, QuickConst } from './types.js';
-import { QuickTemplateRenderer } from './renderers/template-renderer.js';
-import { QuickRenderArg } from './renderers/index.js';
+import { QuickRenderArg, QuickTemplateRenderer } from './renderers/index.js';
 import { isQuickArgInjector } from './utils/predicates.js';
 
 // Class
