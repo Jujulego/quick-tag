@@ -331,6 +331,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@eslint/js@npm:9.9.0":
+  version: 9.9.0
+  resolution: "@eslint/js@npm:9.9.0"
+  checksum: 10c0/6ec9f1f0d576132444d6a5c66a8a08b0be9444e3ebb563fa6a6bebcf5299df3da7e454dc04c0fa601bb811197f00764b3a04430d8458cdb8e3a4677993d23f30
+  languageName: node
+  linkType: hard
+
 "@eslint/object-schema@npm:^2.1.4":
   version: 2.1.4
   resolution: "@eslint/object-schema@npm:2.1.4"
@@ -526,7 +533,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@jujulego/quick-tag@workspace:."
   dependencies:
-    "@eslint/js": "npm:9.8.0"
+    "@eslint/js": "npm:9.9.0"
     "@jujulego/jill": "npm:2.5.2"
     "@jujulego/vite-plugin-swc": "npm:1.2.0"
     "@microsoft/eslint-formatter-sarif": "npm:3.1.0"
