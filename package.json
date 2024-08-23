@@ -35,7 +35,7 @@
     "safe-stable-stringify": "^2.4.3"
   },
   "devDependencies": {
-    "@eslint/js": "9.9.0",
+    "@eslint/js": "9.9.1",
     "@jujulego/jill": "2.5.2",
     "@jujulego/vite-plugin-swc": "1.2.0",
     "@microsoft/eslint-formatter-sarif": "3.1.0",
