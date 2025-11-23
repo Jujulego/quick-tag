@@ -3,13 +3,7 @@
   "version": "1.0.3",
   "license": "MIT",
   "author": "Julien Capellari <julien.capellari@gmail.com>",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jujulego/quick-tag"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
+  "repository": "github:Jujulego/quick-tag",
   "sideEffects": false,
   "files": [
     "dist"
@@ -19,16 +13,16 @@
   "types": "./dist/index.d.ts",
   "exports": {
     "types": "./dist/index.d.ts",
-    "import": "./dist/index.js",
     "default": "./dist/index.js"
   },
   "scripts": {
     "lint": "eslint .",
     "clean": "shx rm -r dist",
-    "build": "jill group 'build:esm // build:types'",
+    "build": "yarn run build:esm && yarn run build:types",
     "build:esm": "swc src -d dist --strip-leading-paths",
     "build:types": "tsc --project tsconfig.build.json",
-    "test": "vitest run --typecheck"
+    "test": "vitest run",
+    "test:types": "tsc --project tests"
   },
   "dependencies": {
     "@swc/helpers": "^0.5.3",
@@ -39,24 +33,19 @@
     "@jujulego/jill": "2.5.2",
     "@jujulego/vite-plugin-swc": "1.2.1",
     "@microsoft/eslint-formatter-sarif": "3.1.0",
-    "@swc/cli": "0.4.0",
-    "@swc/core": "1.6.13",
-    "@types/eslint__js": "8.42.3",
-    "@types/node": "18.19.130",
-    "@vitest/coverage-v8": "2.1.9",
+    "@swc/cli": "0.7.9",
+    "@swc/core": "1.15.3",
+    "@types/node": "24.10.1",
+    "@vitest/coverage-v8": "4.0.13",
+    "@vitest/eslint-plugin": "1.4.3",
     "eslint": "9.39.1",
-    "eslint-plugin-vitest": "0.5.4",
+    "jiti": "2.6.1",
     "shx": "0.4.0",
-    "typescript": "5.4.5",
-    "typescript-eslint": "8.46.4",
-    "vite": "5.4.21",
-    "vite-tsconfig-paths": "4.3.2",
-    "vitest": "2.1.9"
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.47.0",
+    "vite": "7.2.4",
+    "vite-tsconfig-paths": "5.1.4",
+    "vitest": "4.0.13"
   },
-  "packageManager": "yarn@4.3.1",
-  "dependenciesMeta": {
-    "vitest@2.1.9": {
-      "unplugged": true
-    }
-  }
+  "packageManager": "yarn@4.12.0"
 }
