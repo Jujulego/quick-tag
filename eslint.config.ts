@@ -1,7 +1,7 @@
 import eslint from '@eslint/js';
 import vitest from '@vitest/eslint-plugin';
-import ts from 'typescript-eslint';
 import { defineConfig, globalIgnores } from 'eslint/config';
+import ts from 'typescript-eslint';
 
 export default defineConfig(
   globalIgnores(['.pnp.*', '.yarn', 'coverage', 'dist']),

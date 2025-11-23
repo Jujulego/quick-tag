@@ -1,7 +1,7 @@
-import { QuickRenderArg } from './renderers/renderer.js';
 import { QuickParser } from './parser/index.js';
-import { QuickStringRenderer } from './renderers/string-renderer.js';
-import { QuickArgInjector, QuickConst, QuickFun } from './types.js';
+import { QuickStringRenderer } from './renderers/index.js';
+import type { QuickRenderArg } from './renderers/renderer.js';
+import type { QuickArgInjector, QuickConst, QuickFun } from './types.js';
 import { isQuickArgInjector } from './utils/predicates.js';
 
 /**

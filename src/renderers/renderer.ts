@@ -1,5 +1,5 @@
-import { QuickParentNode } from '../parser/index.js';
-import { QuickConditionInjector, QuickConst } from '../types.js';
+import type { QuickParentNode } from '../parser/index.js';
+import type { QuickConditionInjector, QuickConst } from '../types.js';
 import { isQuickConditionInjector } from '../utils/predicates.js';
 
 // Types

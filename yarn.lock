@@ -605,7 +605,7 @@ __metadata:
     "@vitest/eslint-plugin": "npm:1.4.3"
     eslint: "npm:9.39.1"
     jiti: "npm:2.6.1"
-    safe-stable-stringify: "npm:^2.4.3"
+    safe-stringify: "npm:^1.2.0"
     shx: "npm:0.4.0"
     typescript: "npm:5.9.3"
     typescript-eslint: "npm:8.47.0"
@@ -4512,10 +4512,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"safe-stable-stringify@npm:^2.4.3":
-  version: 2.5.0
-  resolution: "safe-stable-stringify@npm:2.5.0"
-  checksum: 10c0/baea14971858cadd65df23894a40588ed791769db21bafb7fd7608397dbdce9c5aac60748abae9995e0fc37e15f2061980501e012cd48859740796bea2987f49
+"safe-stringify@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "safe-stringify@npm:1.2.0"
+  checksum: 10c0/88ce4d2c4834afa9e7b4a2e375feca3351dd49dfe2c98f98e941f17fe232af023b0dbf0997248f8609ad918b382254913d19bcbbe0c590f809f2d48afae10c2f
   languageName: node
   linkType: hard
 

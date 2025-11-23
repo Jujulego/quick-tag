@@ -1,5 +1,4 @@
-import stringify from 'safe-stable-stringify';
-
+import safeStringify from 'safe-stringify';
 import { defineQuickFormat } from '../format.js';
 
 export interface QJsonOpts {
@@ -16,21 +15,17 @@ export interface QJsonOpts {
  */
 export const qjson = defineQuickFormat((arg: unknown, opts: QJsonOpts = {}) => {
   // Replacer
-  function replacer(key: string, value: unknown) {
-    if (value instanceof Error) {
-      const error: Record<string, unknown> = {};
+  if (arg instanceof Error) {
+    const error: Record<string, unknown> = {};
 
-      for (const propName of Object.getOwnPropertyNames(value) as (keyof Error)[]) {
-        Object.assign(error, { [propName]: value[propName] });
-      }
-
-      return error;
+    for (const propName of Object.getOwnPropertyNames(arg) as (keyof Error)[]) {
+      Object.assign(error, { [propName]: arg[propName] });
     }
 
-    return value;
+    arg = error;
   }
 
-  return stringify(arg, replacer, parsePrettyOpt(opts.pretty));
+  return safeStringify(arg, { indentation: parsePrettyOpt(opts.pretty) });
 });
 
 // Utils

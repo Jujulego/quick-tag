@@ -1,4 +1,4 @@
-import { QuickConditionNode, QuickParentNode, QuickRootNode } from './nodes.js';
+import type { QuickConditionNode, QuickParentNode, QuickRootNode } from './nodes.js';
 
 // Parser
 export class QuickParser {
