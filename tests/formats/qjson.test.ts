@@ -1,6 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
-
 import { qjson } from '@/src/formats/qjson.js';
+import { describe, expect, it, vi } from 'vitest';
 
 // Tests
 describe('qjson', () => {
@@ -35,6 +34,6 @@ describe('qjson', () => {
     const err= new Error('Test !');
     vi.spyOn(err, 'stack', 'get').mockReturnValue('Error: Test!');
 
-    expect(qjson(err)).toMatchInlineSnapshot('"{"message":"Test !","stack":"Error: Test!"}"');
+    expect(qjson(err)).toMatchInlineSnapshot('"{"stack":"Error: Test!","message":"Test !"}"');
   });
 });

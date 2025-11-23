@@ -1,6 +1,7 @@
 import { defineQuickFormat } from '../format.js';
 import { isQuickConst } from '../utils/predicates.js';
-import { qjson, QJsonOpts } from './qjson.js';
+import type { QJsonOpts } from './qjson.js';
+import { qjson } from './qjson.js';
 
 /**
  * Returns error's stack if any.

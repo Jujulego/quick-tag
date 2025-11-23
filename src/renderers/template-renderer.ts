@@ -1,6 +1,7 @@
-import { QuickConst } from '../types.js';
-import { QuickRenderArg, QuickRenderContext, QuickRenderer } from './renderer.js';
-import { QuickParentNode } from '../parser/index.js';
+import type { QuickParentNode } from '../parser/index.js';
+import type { QuickConst } from '../types.js';
+import type { QuickRenderArg, QuickRenderContext } from './renderer.js';
+import { QuickRenderer } from './renderer.js';
 
 // Types
 export interface TemplateArgs {
@@ -20,7 +21,7 @@ export class QuickTemplateRenderer extends QuickRenderer<TemplateArgs> {
   // Methods
   private _merge(state: TemplateRenderState, other: TemplateArgs) {
     if (state.strings.length > state.args.length) {
-      state.strings[state.strings.length - 1] += other.strings[0];
+      state.strings[state.strings.length - 1]! += other.strings[0];
       state.strings.push(...other.strings.slice(1));
     } else {
       state.strings.push(...other.strings);

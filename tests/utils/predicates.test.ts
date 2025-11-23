@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { q$, qarg } from '@/src/injector.js';
 
 import { isQuickArgInjector, isQuickConditionInjector, isQuickConst } from '@/src/utils/predicates.js';
-import { q$, qarg } from '@/src/injector.js';
+import { describe, expect, it } from 'vitest';
 
 // Tests
 describe('isQuickConst', () => {

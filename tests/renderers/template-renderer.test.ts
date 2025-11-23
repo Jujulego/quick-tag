@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-
-import { QuickRootNode } from '@/src/parser/index.js';
+import type { QuickRootNode } from '@/src/parser/index.js';
 import { QuickTemplateRenderer } from '@/src/renderers/template-renderer.js';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 // Setup
 let renderer: QuickTemplateRenderer;

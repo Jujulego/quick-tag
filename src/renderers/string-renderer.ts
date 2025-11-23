@@ -1,6 +1,7 @@
-import { QuickParentNode } from '../parser/index.js';
-import { QuickConditionInjector, QuickConst } from '../types.js';
-import { QuickRenderContext, QuickRenderer } from './renderer.js';
+import type { QuickParentNode } from '../parser/index.js';
+import type { QuickConditionInjector, QuickConst } from '../types.js';
+import type { QuickRenderContext } from './renderer.js';
+import { QuickRenderer } from './renderer.js';
 
 /**
  * Renders quick tree with args to a string;

@@ -1,8 +1,7 @@
-import { describe, expect, it, vi } from 'vitest';
-
 import { defineQuickFormat } from '@/src/format.js';
 import { q$, qarg, qprop } from '@/src/injector.js';
 import { qfun, qstr } from '@/src/quick-tags.js';
+import { describe, expect, it, vi } from 'vitest';
 
 // Type
 export interface TestArg {

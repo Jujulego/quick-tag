@@ -1,8 +1,7 @@
-import { describe, expect, it, vi } from 'vitest';
-
 import { defineQuickFormat } from '@/src/format.js';
 import { q$, qarg } from '@/src/injector.js';
 import { QUICK_ARG_INJECTOR, QUICK_CONDITION_INJECTOR } from '@/src/symbols.js';
+import { describe, expect, it, vi } from 'vitest';
 
 // Tests
 describe('defineQuickFormat', () => {

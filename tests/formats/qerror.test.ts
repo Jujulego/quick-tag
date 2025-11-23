@@ -1,6 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
-
 import { qerror } from '@/src/formats/qerror.js';
+import { describe, expect, it, vi } from 'vitest';
 
 // Tests
 describe('qerror', () => {
